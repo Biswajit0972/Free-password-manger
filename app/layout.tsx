@@ -34,7 +34,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar/>
-       <main className="w-full relative">
+       <main className="max-w-screen relative h-[calc(100vh-4.5rem)] overflow-x-hidden">
+        
          {children}
        </main>
       </body>
