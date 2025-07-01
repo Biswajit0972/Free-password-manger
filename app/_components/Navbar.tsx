@@ -53,7 +53,7 @@ const Navbar = () => {
             return (
               <Link
                 href={item.href}
-                key={item.href}
+                key={item.title}
                 className={`text-white  flex-center gap-2 group ${
                   pathname === item.href ? "text-green-500 font-bold" : ""
                 }`}
