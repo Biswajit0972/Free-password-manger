@@ -1,17 +1,61 @@
 @import "tailwindcss";
 
-
 @layer utilities {
-    .flex-center {
-        @apply flex items-center justify-center;
-    }
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
 
-    .flex-center-column {
-        @apply flex items-center justify-center flex-col;
-    }
+  .flex-center-column {
+    @apply flex items-center justify-center flex-col;
+  }
 
-    .flex-between {
-        @apply flex items-center justify-between;
-    }
+  .flex-between {
+    @apply flex items-center justify-between;
+  }
 
+  /* font-styles */
+}
+
+@layer base {
+  .primary-font {
+    @apply font-sans text-gray-800 text-4xl font-extrabold;
+  }
+
+  .secondary-font {
+    @apply font-sans text-[#6B7280] text-lg;
+  }
+}
+
+@layer components {
+  .slider {
+    @apply appearance-none w-full h-1 bg-gray-900 rounded-lg cursor-pointer;
+  }
+
+  /* Chrome, Safari, Edge */
+  .slider::-webkit-slider-thumb {
+    @apply appearance-none w-4 h-4 bg-black rounded-full border-2 border-gray-500 shadow;
+    margin-top: -6px; /* adjust vertically */
+  }
+
+  /* Firefox */
+  .slider::-moz-range-thumb {
+    @apply w-4 h-4 bg-black rounded-full border-2 border-gray-500 shadow;
+  }
+
+  /* IE (if needed, optional) */
+  .slider::-ms-thumb {
+    @apply w-4 h-4 bg-black rounded-full border-2 border-gray-500 shadow;
+  }
+
+  /* Chrome, Safari, Edge */
+  .no-spinner::-webkit-outer-spin-button,
+  .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  .no-spinner {
+    -moz-appearance: textfield;
+  }
 }
