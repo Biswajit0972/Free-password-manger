@@ -19,6 +19,12 @@ const PasswordGenerator = () => {
   >("");
 
   useEffect(() => {
+    console.log(passwordLength);
+   
+    if (passwordLength < 8) {
+      return;
+    } 
+
     let response = passwordGenerator(
       passwordLength,
       includeNumbers,
@@ -69,9 +75,10 @@ const PasswordGenerator = () => {
             <h3 className="text-sm font-semibold text-gray-900">Character</h3>
             <input
               type="range"
-              min="8"
+              min="0"
               max="50"
               className="slider w-full"
+            
               value={passwordLength}
               onChange={(e) => setPasswordLength(Number(e.target.value))}
             />
@@ -80,7 +87,7 @@ const PasswordGenerator = () => {
             <input
               type="number"
               className="no-spinner w-full h-full bg-white rounded-md border-0 outline-1 outline-blue-500 text-gray-900 px-2 text-sm font-semibold"
-              value={passwordLength}
+              value={passwordLength === 0 ? "" : passwordLength}
               onChange={(e) => setPasswordLength(Number(e.target.value))}
             />
           </div>
