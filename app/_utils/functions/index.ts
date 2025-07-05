@@ -2,45 +2,45 @@ export type passwordStrength = "Very Weak" | "Weak" | "Medium" | "Fair" | "Good"
 
 export const passwordStrengthCheckHelper = (password: string): string | passwordStrength=> {
   const length = password.length;
-  let hasNumbers = false;
-  let hasSymbols = false;
-  let hasUppercase = false;
-  let hasLowercase = false;
+  let score = 0;
 
-  for (let i = 0; i < length; i++) {
-    const char = password.charAt(i);
-    hasNumbers ||= /\d/.test(char);
-    hasSymbols ||= /[!@#$%^&*(),.?":{}|<>+\-=/\\[\]_`~;]/.test(char); // Extended symbols
-    hasUppercase ||= /[A-Z]/.test(char);
-    hasLowercase ||= /[a-z]/.test(char);
-  }
+  const hasLower = /[a-z]/.test(password);
+  const hasUpper = /[A-Z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSymbol = /[!@#$%^&*(),.?":{}|<>+\-=/\\[\]_`~;]/.test(password);
+  const hasMiddleChar = /(?=\S*[\d!@#$%^&*(),.?":{}|<>+\-=/\\[\]_`~;])/.test(password.slice(1, -1));
+  const onlyLetters = /^[a-zA-Z]+$/.test(password);
+  const onlyNumbers = /^\d+$/.test(password);
+  
+  // Length
+  if (length >= 8) score += 10;
+  if (length >= 12) score += 10;
+  if (length >= 16) score += 10;
 
-  // Most secure at the top
-  if (hasLowercase && hasUppercase && hasNumbers && hasSymbols && length >= 16) {
-    return "Excellent";
-  }
+  // Character Variety
+  if (hasLower) score += 10;
+  if (hasUpper) score += 10;
+  if (hasNumber) score += 10;
+  if (hasSymbol) score += 15;
+  if (hasMiddleChar) score += 5;
 
-  if (hasLowercase && hasUppercase && hasNumbers && hasSymbols && length >= 12) {
-    return "Very Strong";
-  }
+  // Bonus for combo
+  if (hasLower && hasUpper && hasNumber && hasSymbol) score += 10;
 
-  if (hasLowercase && hasUppercase && hasNumbers && hasSymbols && length >= 10) {
-    return "Good";
-  }
+  // Penalties
+  if (onlyLetters || onlyNumbers) score -= 10;
+  if (length < 6) score -= 15;
 
-  if (hasLowercase && hasUppercase && hasNumbers && length >= 10) {
-    return "Fair";
-  }
+  // Clamp score between 0 and 100
+  score = Math.max(0, Math.min(score, 100));
 
-  if ((hasLowercase || hasUppercase) && (hasNumbers || hasSymbols) && length >= 8) {
-    return "Weak";
-  }
-
-  if ((hasLowercase || hasUppercase) && length >= 6) {
-    return "Very Weak";
-  }
-
-  return "Very Weak (Too Short)";
+  if (score >= 90) return "Excellent";
+  if (score >= 80 && score < 90) return "Very Strong";
+  if (score >= 70 && score < 80) return "Strong";
+  if (score >= 60 && score < 70) return "Good";
+  if (score >= 50 && score < 60) return "Fair";
+  if (score >= 30) return "Weak";
+  return "Very Weak";
 };
 
 export const passwordGenerator = (
