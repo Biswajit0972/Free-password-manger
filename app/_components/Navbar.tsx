@@ -3,7 +3,7 @@
 import React from "react";
 import Logo from "./Logo";
 import MobileMenu from "./MobileMenu";
-import { useUser } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import Navigation from "./Navigation";
 import { authNavItems, navItems } from "../_utils";
 import Link from "next/link";
@@ -18,7 +18,8 @@ const Navbar = () => {
   return (
     <div className="w-full h-18 bg-gray-500 px-5 py-2 relative flex-between ">
       <Logo />
-      {isLoaded && isSignedIn ? (
+      <div className="h-full relative flex-between  gap-2">
+    {isLoaded && isSignedIn ? (
         <>
           <Navigation
             data={navItems}
@@ -47,6 +48,7 @@ const Navbar = () => {
           />
         </>
       ) : (
+       <>
         <Navigation
           data={authNavItems}
           render={(item) => {
@@ -72,10 +74,15 @@ const Navbar = () => {
             );
           }}
         />
+       
+       </>
       )}
+      </div>
+  
       <div className="h-full relative sm:hidden">
         <MobileMenu />
       </div>
+      
     </div>
   );
 };

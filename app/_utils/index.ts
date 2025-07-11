@@ -25,7 +25,7 @@ export const navItems: navItem[] = [
     title: "Settings",
     href: "/settings/user-profile",
     icon: Settings,
-  }
+  },
 ];
 
 export const authNavItems: navItem[] = [
