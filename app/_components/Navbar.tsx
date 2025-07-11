@@ -3,7 +3,7 @@
 import React from "react";
 import Logo from "./Logo";
 import MobileMenu from "./MobileMenu";
-import { UserButton, useUser } from "@clerk/nextjs";
+import {  useUser } from "@clerk/nextjs";
 import Navigation from "./Navigation";
 import { authNavItems, navItems } from "../_utils";
 import Link from "next/link";
