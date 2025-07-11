@@ -6,6 +6,7 @@ import {
   passwordStrength,
   passwordStrengthCheckHelper,
 } from "../_utils/functions";
+import { toast } from "react-toastify";
 
 const PasswordGenerator = () => {
   const [includeNumbers, setIncludeNumbers] = useState<boolean>(false);
@@ -52,7 +53,7 @@ const PasswordGenerator = () => {
   }, [password, passwordFeedback]);
 
   return (
-    <div className="w-full relative bg-gray-300 rounded-md p-2 flex-center-column gap-2">
+    <div className="w-full relative bg-gray-100 rounded-md p-2 flex-center-column gap-2 sm:p-5 sm:shadow-2xl sm:shadow-[#000000]">
       {/* input field */}
       <div className="w-full relative overflow-hidden flex flex-col gap-1">
         <input
@@ -121,7 +122,10 @@ const PasswordGenerator = () => {
           <button className="w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition  cursor-pointer" onClick={() => setRefresh(true)}>
             🔄 Refresh
           </button>
-          <button className="w-full bg-green-500 text-white font-semibold py-2 rounded-md hover:bg-green-600 transition  cursor-pointer">
+          <button className="w-full bg-green-500 text-white font-semibold py-2 rounded-md hover:bg-green-600 transition  cursor-pointer" onClick={() => {
+            navigator.clipboard.writeText(password);
+            toast("Password copied to clipboard!", {autoClose:2000, type: "success"});
+          }}>
             📋 Copy
           </button>
         </div>
