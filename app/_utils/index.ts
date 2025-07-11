@@ -23,7 +23,7 @@ export const navItems: navItem[] = [
   },
   {
     title: "Settings",
-    href: "/settings",
+    href: "/settings/user-profile",
     icon: Settings,
   }
 ];
