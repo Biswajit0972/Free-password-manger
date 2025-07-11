@@ -100,19 +100,19 @@ const PasswordGenerator = () => {
             <button
               onClick={() => setIncludeNumbers(!includeNumbers)}
               className={`px-4 py-2 cursor-pointer rounded-md font-semibold text-white text-sm ${
-                includeNumbers ? "bg-blue-500" : "bg-green-500"
+                includeNumbers ? "bg-blue-500" : "bg-gray-500"
               }`}
             >
-              Numbers {includeNumbers ? "✔" : "✖"}
+              Numbers {includeNumbers ? "✅" : "❌"}
             </button>
 
             <button
               onClick={() => setIncludeSymbols(!includeSymbols)}
               className={`px-4 py-2 cursor-pointer rounded-md font-semibold text-white text-sm ${
-                includeSymbols ? "bg-blue-500" : "bg-green-500"
+                includeSymbols ? "bg-blue-500" : "bg-gray-500"
               }`}
             >
-              Symbols {includeSymbols ? "✔" : "✖"}
+              Symbols {includeSymbols ? "✅" : "❌"}
             </button>
           </div>
         </div>

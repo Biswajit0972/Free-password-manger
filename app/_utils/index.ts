@@ -1,7 +1,7 @@
 import { House } from "@deemlol/next-icons";
 import { AppWindowMac } from "@deemlol/next-icons";
 import { LogIn } from "@deemlol/next-icons";
-import { FileText } from "@deemlol/next-icons";
+import { FileText, Settings } from "@deemlol/next-icons";
 
 type navItem = {
   title: string;
@@ -20,6 +20,11 @@ export const navItems: navItem[] = [
     title: "Password Manager",
     href: "/password",
     icon: AppWindowMac,
+  },
+  {
+    title: "Settings",
+    href: "/settings",
+    icon: Settings,
   }
 ];
 
