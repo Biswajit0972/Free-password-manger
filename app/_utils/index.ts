@@ -46,3 +46,21 @@ export const authNavItems: navItem[] = [
     icon: FileText,
    }
 ]
+
+export type User = {
+  username: string;
+  password: string;
+};
+
+export const fakeUsers: User[] = [
+  { username: "john_doe", password: "password123" },
+  { username: "alice_w", password: "alice@2024" },
+  { username: "tech_guru", password: "securePass!" },
+  { username: "dev_biswajit", password: "biswajitDev99" },
+  { username: "cool_cat", password: "meowMeow88" },
+  { username: "hacker_007", password: "qwerty007" },
+  { username: "admin_user", password: "admin$admin" },
+  { username: "test_user", password: "test1234" },
+  { username: "ninja_dev", password: "codeMaster99" },
+  { username: "user_xyz", password: "helloWorld123" },
+];
