@@ -4,10 +4,10 @@ const isPublicRoute = createRouteMatcher(["/sign-in", "/sign-up"]);
 const isPrivateRoute = createRouteMatcher(["/password", "/settings"]);
 
 export default clerkMiddleware(async (auth, req) => {
-    const {userId} = await auth();
-    const pathname = req.nextUrl.pathname;
-  
-  // ! if user is authenticated, also try ti access sign-in or sign-up page, redirect to home or prevent them.
+  const { userId } = await auth();
+ 
+
+  // ! if user is authenticated, also try to access sign-in or sign-up page, redirect to home or prevent them.
 
   if (userId && isPublicRoute(req)) {
     console.log("preventing authenticated user from accessing public route");
@@ -20,7 +20,7 @@ export default clerkMiddleware(async (auth, req) => {
     return Response.redirect(new URL("/sign-in", req.url));
   }
 
-  
+
 }
 );
 
