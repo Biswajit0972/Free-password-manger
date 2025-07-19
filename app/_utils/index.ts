@@ -118,3 +118,9 @@ export const fakeData: SiteData[] = [
     ]
   }
 ];
+
+export type passwordForm  = {
+  applicationLink: string;
+  username: string;
+  password: string;
+}
