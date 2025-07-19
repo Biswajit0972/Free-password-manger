@@ -6,7 +6,7 @@ const CustomUl = <T,>({
   className,
 }: {
   data: T[];
-  render: (data: T) => React.ReactNode;
+  render: (data: T, index?:number) => React.ReactNode;
   className?: string;
 }) => {
   return <ul className={className}>{data && data.map(render)}</ul>;

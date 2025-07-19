@@ -64,3 +64,57 @@ export const fakeUsers: User[] = [
   { username: "ninja_dev", password: "codeMaster99" },
   { username: "user_xyz", password: "helloWorld123" },
 ];
+
+type Account = {
+  username: string;
+  password: string;
+};
+
+type SiteData = {
+  sitename: string;
+  icon: string;
+  account: Account[];
+};
+
+export const fakeData: SiteData[] = [
+  {
+    sitename: "google.com",
+    icon: "https://www.google.com/favicon.ico",
+    account: [
+      { username: "john.doe@gmail.com", password: "g00gl3Pa$$123" },
+      { username: "jane.smith@gmail.com", password: "P@ssword456!" }
+    ]
+  },
+  {
+    sitename: "facebook.com",
+    icon: "https://www.facebook.com/favicon.ico",
+    account: [
+      { username: "john_facebook", password: "Fb@123456" },
+      { username: "jane_facebook", password: "FbP@ss789!" }
+    ]
+  },
+  {
+    sitename: "twitter.com",
+    icon: "https://twitter.com/favicon.ico",
+    account: [
+      { username: "john_twt", password: "Tw1tter@098" },
+      { username: "jane_tw", password: "JaneTwt#321" }
+    ]
+  },
+  {
+    sitename: "github.com",
+    icon: "https://github.com/favicon.ico",
+    account: [
+      { username: "john-dev", password: "G!thub123" },
+      { username: "jane-code", password: "Code#Hub321" }
+    ]
+  },
+  {
+    sitename: "linkedin.com",
+    icon: "https://www.linkedin.com/favicon.ico",
+    account: [
+      { username: "john.business", password: "L!nkedIn789" },
+      { username: "jane.career", password: "JanePro456!" }
+    ]
+  }
+];

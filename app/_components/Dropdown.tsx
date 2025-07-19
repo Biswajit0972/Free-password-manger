@@ -6,8 +6,9 @@ import fakeLogo from "@/public/download (2).gif";
 import { ChevronDown, ChevronUp } from "@deemlol/next-icons";
 import { User } from "../_utils";
 import PasswordRender from "./PasswordRender";
+import CustomUl from "./CustomUl";
 
-const Dropdown = ({appName, userDetails=[], image}: {appName: string; userDetails: User[]; image: string}) => {
+const Dropdown = ({appName, userDetails=[], image}: {appName: string; userDetails: User[]; image?: string}) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
   
   return (
@@ -17,10 +18,10 @@ const Dropdown = ({appName, userDetails=[], image}: {appName: string; userDetail
         onClick={() => setIsDropDownOpen(!isDropDownOpen)}
       >
         <div className="max-w-1/2 h-full flex-between gap-2 ">
-          <div className="w-10 h-10 rounded-full object-cover overflow-hidden bg-green-500 ">
-            <Image src={fakeLogo} alt="app icon" className="object-cover" />
+          <div className="w-10 h-10 rounded-full object-cover overflow-hidden ">
+            <Image src={image || fakeLogo} alt="app icon" className="object-cover"  height={40} width={40}/>
           </div>
-          <span className="text-white font-bold text-sm">{appName}</span>
+          <span className="text-white font-bold text-sm capitalize">{appName}</span>
         </div>
         <div className="relative">
           {isDropDownOpen ? (
@@ -33,16 +34,16 @@ const Dropdown = ({appName, userDetails=[], image}: {appName: string; userDetail
      {
       isDropDownOpen &&  <div
         className={`w-full bg-gray-500 rounded-md 
-           max-h-46 
+           max-h-60 
          transition-all ease-in-out p-1 overflow-auto  `}
       >
-        { userDetails.map((user, index) => (
+       <CustomUl data={userDetails} render={(user, index) => (
           <PasswordRender
             Username={user.username}
             Password={user.password}
             key={index}
           />
-        ))}
+        )}/>
       </div>
      }
     </div>
