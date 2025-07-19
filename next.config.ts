@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
       "www.facebook.com",
       "twitter.com",
       "github.com",
-      "www.linkedin.com"
+      "www.linkedin.com",
+      "t1.gstatic.com"
     ]
   }
   /* config options here */
