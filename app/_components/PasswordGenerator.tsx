@@ -7,6 +7,8 @@ import {
   passwordStrengthCheckHelper,
 } from "../_utils/functions";
 import { toast } from "react-toastify";
+import { useApplicationcontext } from "../_context/Context";
+import { useRouter } from 'next/navigation';
 
 const PasswordGenerator = () => {
   const [includeNumbers, setIncludeNumbers] = useState<boolean>(false);
@@ -14,17 +16,16 @@ const PasswordGenerator = () => {
   const [refresh, setRefresh] = useState<boolean>(false);
   const [passwordLength, setPasswordLength] = useState<number>(8);
   const [password, setPassword] = useState<string>("");
-
   const [passwordFeedback, setPasswordFeedback] = useState<
     passwordStrength | string
   >("");
+  const { dispatch } = useApplicationcontext();
 
+  const router = useRouter();
   useEffect(() => {
-    console.log(passwordLength);
-   
     if (passwordLength < 8) {
       return;
-    } 
+    }
 
     let response = passwordGenerator(
       passwordLength,
@@ -33,14 +34,14 @@ const PasswordGenerator = () => {
     );
 
     if (refresh) {
-        response = passwordGenerator(
-          passwordLength,
-          includeNumbers,
-          includeSymbols
-        );
+      response = passwordGenerator(
+        passwordLength,
+        includeNumbers,
+        includeSymbols
+      );
       setRefresh(false);
     }
-    
+
     setPassword(response);
   }, [refresh, passwordLength, includeNumbers, includeSymbols]);
 
@@ -51,6 +52,11 @@ const PasswordGenerator = () => {
       setPasswordFeedback(feedback);
     }
   }, [password, passwordFeedback]);
+
+  const handelSavePassword = () => {
+    dispatch({ type: "ADD_PASSWORD", payload: password });
+    router.push("/password");
+  };
 
   return (
     <div className="w-full relative bg-gray-100 rounded-md p-2 flex-center-column gap-2 sm:p-5 sm:shadow-2xl sm:shadow-[#000000]">
@@ -79,7 +85,6 @@ const PasswordGenerator = () => {
               min="0"
               max="50"
               className="slider w-full"
-            
               value={passwordLength}
               onChange={(e) => setPasswordLength(Number(e.target.value))}
             />
@@ -119,19 +124,31 @@ const PasswordGenerator = () => {
 
         {/* Action buttons */}
         <div className="w-full flex justify-between gap-2 mt-2">
-          <button className="w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition  cursor-pointer" onClick={() => setRefresh(true)}>
+          <button
+            className="w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition  cursor-pointer"
+            onClick={() => setRefresh(true)}
+          >
             🔄 Refresh
           </button>
-          <button className="w-full bg-green-500 text-white font-semibold py-2 rounded-md hover:bg-green-600 transition  cursor-pointer" onClick={() => {
-            navigator.clipboard.writeText(password);
-            toast("Password copied to clipboard!", {autoClose:2000, type: "success"});
-          }}>
+          <button
+            className="w-full bg-green-500 text-white font-semibold py-2 rounded-md hover:bg-green-600 transition  cursor-pointer"
+            onClick={() => {
+              navigator.clipboard.writeText(password);
+              toast("Password copied to clipboard!", {
+                autoClose: 2000,
+                type: "success",
+              });
+            }}
+          >
             📋 Copy
           </button>
         </div>
 
         {/* Save Button */}
-        <button className="w-full bg-gray-700 text-white font-bold py-3 rounded-md text-lg hover:bg-gray-800 transition cursor-pointer">
+        <button
+          className="w-full bg-gray-700 text-white font-bold py-3 rounded-md text-lg hover:bg-gray-800 transition cursor-pointer"
+          onClick={handelSavePassword}
+        >
           💾 Save Password
         </button>
       </div>

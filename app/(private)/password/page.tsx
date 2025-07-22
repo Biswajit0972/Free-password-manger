@@ -3,12 +3,14 @@
 import CustomUl from "@/app/_components/CustomUl";
 import Dropdown from "@/app/_components/Dropdown";
 import PasswordForm from "@/app/_components/PasswordForm";
+import { useApplicationcontext } from "@/app/_context/Context";
 import { fakeData } from "@/app/_utils";
 import { FolderPlus } from "@deemlol/next-icons";
 import React, { useState } from "react";
 
 const Password = () => {
-  const [open, setOpen] = useState<boolean>(false);
+  const {state} = useApplicationcontext();
+  const [open, setOpen] = useState<boolean>(state.password.length > 0 ? true : false);
 
   return (
     <div className="w-full h-full relative px-5 py-1 overflow-hidden flex-column">

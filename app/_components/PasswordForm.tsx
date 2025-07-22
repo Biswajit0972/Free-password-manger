@@ -1,26 +1,32 @@
-
-import {  useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import demoImg from "@/public/download (2).gif";
 import Input from "./Input";
 import { useForm } from "react-hook-form";
 import { passwordForm } from "../_utils";
+import { useApplicationcontext } from "../_context/Context";
 
 const PasswordForm = () => {
+  const {
+    state: { password },
+  } = useApplicationcontext();
   const [icon, setIcon] = useState<string>("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<passwordForm>();
+  } = useForm<passwordForm>({
+    defaultValues: {
+      applicationLink: "",
+      username: "",
+      password: password.length > 0 ? password : "",
+    },
+  });
 
   const onSubmit = (data: passwordForm) => {
     console.log(data);
   };
-
-  
-  
 
   return (
     <div className="w-[95%] absolute bottom-8 left-1/2 -translate-x-1/2  p-4 bg-white rounded-lg shadow-lg z-10">
@@ -33,7 +39,11 @@ const PasswordForm = () => {
         <div className="Application-icon w-full h-12  flex-center relative">
           <div className="w-12 h-full relative  rounded-2xl overflow-hidden ">
             <Image
-              src={icon.length > 3 ? `https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${icon}&size=128` : demoImg}
+              src={
+                icon.length > 3
+                  ? `https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${icon}&size=128`
+                  : demoImg
+              }
               alt="application-img"
               fill
               sizes="100%"

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useReducer, ReactNode, Dispatch, useContext } from "react";
 
 type StateType = {
