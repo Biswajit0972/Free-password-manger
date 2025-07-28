@@ -1,3 +1,4 @@
+
 import PasswordGenerator from "./_components/PasswordGenerator";
 
 const Page = () => {
