@@ -4,7 +4,6 @@ import CustomUl from "@/app/_components/CustomUl";
 import Dropdown from "@/app/_components/Dropdown";
 import { MasterPasswordPopup } from "@/app/_components/MasterPasswordPopup";
 import PasswordForm from "@/app/_components/PasswordForm";
-import { useApplicationcontext } from "@/app/_context/Context";
 import { fakeData } from "@/app/_utils";
 import { useAuth } from "@clerk/nextjs";
 import { FolderPlus } from "@deemlol/next-icons";
