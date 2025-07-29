@@ -9,10 +9,10 @@ export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
   setSession,
 }) => {
   const [masterPassword, setMasterPassword] = useState<string>("");
+  const [updating, setUpdating] = useState<boolean>(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSession(true);
   };
 
   return (
@@ -52,6 +52,7 @@ export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
           <button
             type="submit"
             className="w-full p-2 bg-blue-700 hover:bg-blue-800 text-white rounded font-semibold transition-colors"
+            disabled={updating}
           >
             Submit
           </button>
