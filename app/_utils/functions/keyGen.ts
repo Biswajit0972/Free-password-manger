@@ -1,29 +1,74 @@
 
-export async function getKeyMaterial(password:string) {
-  const enc = new TextEncoder();
-  return window.crypto.subtle.importKey(
-    "raw",
-    enc.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveBits", "deriveKey"]
-  );
+export async function cryptoKeyGen(masterPassword: string) {
+    const baseKey1 = await genBaseKey(masterPassword);
+
+    const salt = window.crypto.getRandomValues(new Uint8Array(16));
+
+    const derivedKey = await window.crypto.subtle.deriveKey(
+        {
+            name: "PBKDF2",
+            salt: salt,
+            iterations: 1000000,
+            hash: "SHA-256"
+        },
+        baseKey1,
+        { name: "AES-GCM", length: 256 },
+        true,
+        ["encrypt", "decrypt"]
+    );
+
+    return derivedKey;
+}
+
+export const genBaseKey = async (masterPassword: string): Promise<CryptoKey> => {
+    const enc = new TextEncoder();
+    const stringToArray = enc.encode(masterPassword);
+    // ! encode convert string to Uint8Array
+    return await window.crypto.subtle.importKey("raw", stringToArray, "PBKDF2", false, ["deriveKey"]);
 }
 
 
-async function deriveAesKey(password:string, salt:Uint8Array) {
-  const keyMaterial = await getKeyMaterial(password);
-  return window.crypto.subtle.deriveKey(
-    {
-      name: "PBKDF2",
-      salt: salt.buffer, // Must be a Uint8Array or ArrayBuffer
-      iterations: 100000, // Use a high number for security
-      hash: "SHA-256"
+
+export async function encryptData(data: string, key: CryptoKey, iv: Uint8Array<ArrayBuffer>) {
+    const enc = new TextEncoder();
+    const stringToArray = enc.encode(data);
+
+
+    const encryptedData = await window.crypto.subtle.encrypt({
+        name: "AES-GCM",
+        iv: iv,
     },
-    keyMaterial,
-    { name: "AES-GCM", length: 256 }, // For AES-GCM 256-bit key
-    true, // Extractable
-    ["encrypt", "decrypt"]
-  );
+        key,
+        stringToArray
+    );
+
+
+
+    const encryptedBase64 = arrayBufferToBase64(encryptedData);
+    const ivBase64 = arrayBufferToBase64(iv.buffer);
+
+    console.log("Encrypted (base64):", encryptedBase64);
+    console.log("IV (base64):", ivBase64);
+
+    return { encryptedData, iv };
+
 }
 
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+    const bytes = new Uint8Array(buffer);
+    const binary = String.fromCharCode(...bytes);
+    return btoa(binary);
+}
+
+export async function decryptData(encryptedData: ArrayBuffer, key: CryptoKey, iv: Uint8Array<ArrayBuffer>): Promise<string> {
+    const decryptedData = await window.crypto.subtle.decrypt({
+        name: "AES-GCM",
+        iv: iv,
+    },
+        key,
+        encryptedData
+    );
+
+    const decryptedString = new TextDecoder().decode(decryptedData);
+    return decryptedString;
+}

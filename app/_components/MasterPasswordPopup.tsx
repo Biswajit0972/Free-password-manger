@@ -18,8 +18,8 @@ export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     const masterPassword = formData.get("masterPassword") as string;
-    const salt = crypto.getRandomValues(new Uint8Array(16));
-     cryptoKeyGen(masterPassword, salt);
+    // const salt = crypto.getRandomValues(new Uint8Array(16));
+     cryptoKeyGen(masterPassword);
     setUpdating(false);
   };
 
