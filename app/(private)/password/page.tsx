@@ -15,14 +15,12 @@ const Password = () => {
   const { isLoaded, sessionId } = useAuth();
   const [session, setSession] = useState<boolean | null>(() => {
     if (isLoaded && sessionId) {
-      const { userKey } = JSON.parse(sessionStorage.getItem("userKey") || "{");
+      const { userKey } = JSON.parse(sessionStorage.getItem("userKey") || "{}");
       return !userKey ? true : false;
     }
     return null;
   });
 
-
-  console.log(session);
   return (
     <div className="w-full h-full relative px-5 py-1 overflow-hidden flex-column">
       {session ? (

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { cryptoKeyGen } from "../_utils/functions/keyGen";
 
 type MasterPasswordPopupProps = {
   setSession: React.Dispatch<React.SetStateAction<boolean | null>>;
@@ -13,6 +14,13 @@ export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setUpdating(true);
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const masterPassword = formData.get("masterPassword") as string;
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+     cryptoKeyGen(masterPassword, salt);
+    setUpdating(false);
   };
 
   return (
@@ -40,6 +48,7 @@ export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
         </div>
         <form onSubmit={handleSubmit} className="w-full">
           <input
+            name="masterPassword"
             type="password"
             placeholder="Master Password"
             value={masterPassword}
