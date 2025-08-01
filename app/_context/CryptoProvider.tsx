@@ -3,11 +3,12 @@ import { FC, ReactNode, createContext, useContext, useState } from "react";
 type CryptoContextType = {
   derivedKey: CryptoKey | null;
   setDerivedKey: (key: CryptoKey | null) => void;
-  children?: ReactNode;
 };
 
 const CryptoContext = createContext<CryptoContextType | undefined>(undefined);
-const CryptoProvider: FC<CryptoContextType> = ({ children }) => {
+const CryptoProvider: FC<{
+  children: ReactNode;
+}> = ({ children }) => {
   const [derivedKey, setDerivedKey] = useState<CryptoKey | null>(null);
   return (
     <CryptoContext.Provider value={{ derivedKey, setDerivedKey }}>
