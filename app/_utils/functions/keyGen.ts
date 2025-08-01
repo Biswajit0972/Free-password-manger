@@ -1,74 +1,35 @@
 
-export async function cryptoKeyGen(masterPassword: string) {
-    const baseKey1 = await genBaseKey(masterPassword);
+import {  arrayBufferToBase64, base64ToArrayBuffer, decryptDerivedKey, encryptDerivedKey, genBaseKey, genDerivedKey } from "./keyHelper"
 
-    const salt = window.crypto.getRandomValues(new Uint8Array(16));
+export const cryptoKeyGen = async (masterPassword: string, saltKey: string, saltEnKey: string, enKeyIv: string) => {
+    try {
+        const basekey = await genBaseKey(masterPassword);
+        const salt = base64ToArrayBuffer(saltKey);
+        const saltEn = base64ToArrayBuffer(saltEnKey);
+        const enIv = base64ToArrayBuffer(enKeyIv);
+        const derivedKeyForDataEn = await genDerivedKey(basekey, salt)
+        const derivedKeyForEnKey = await genDerivedKey(basekey, saltEn)
 
-    const derivedKey = await window.crypto.subtle.deriveKey(
-        {
-            name: "PBKDF2",
-            salt: salt,
-            iterations: 1000000,
-            hash: "SHA-256"
-        },
-        baseKey1,
-        { name: "AES-GCM", length: 256 },
-        true,
-        ["encrypt", "decrypt"]
-    );
+        const { encryptedKey } = await encryptDerivedKey(derivedKeyForEnKey, derivedKeyForDataEn, enIv);
 
-    return derivedKey;
+        sessionStorage.setItem("encryptedKey", encryptedKey);
+        sessionStorage.setItem("enIv", arrayBufferToBase64(enIv.buffer));
+        
+        return derivedKeyForEnKey;
+    } catch (error) {
+        const err = error as Error;
+        console.log(err.message);
+    }
 }
 
-export const genBaseKey = async (masterPassword: string): Promise<CryptoKey> => {
-    const enc = new TextEncoder();
-    const stringToArray = enc.encode(masterPassword);
-    // ! encode convert string to Uint8Array
-    return await window.crypto.subtle.importKey("raw", stringToArray, "PBKDF2", false, ["deriveKey"]);
-}
-
-
-
-export async function encryptData(data: string, key: CryptoKey, iv: Uint8Array<ArrayBuffer>) {
-    const enc = new TextEncoder();
-    const stringToArray = enc.encode(data);
-
-
-    const encryptedData = await window.crypto.subtle.encrypt({
-        name: "AES-GCM",
-        iv: iv,
-    },
-        key,
-        stringToArray
-    );
-
-
-
-    const encryptedBase64 = arrayBufferToBase64(encryptedData);
-    const ivBase64 = arrayBufferToBase64(iv.buffer);
-
-    console.log("Encrypted (base64):", encryptedBase64);
-    console.log("IV (base64):", ivBase64);
-
-    return { encryptedData, iv };
-
-}
-
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-    const bytes = new Uint8Array(buffer);
-    const binary = String.fromCharCode(...bytes);
-    return btoa(binary);
-}
-
-export async function decryptData(encryptedData: ArrayBuffer, key: CryptoKey, iv: Uint8Array<ArrayBuffer>): Promise<string> {
-    const decryptedData = await window.crypto.subtle.decrypt({
-        name: "AES-GCM",
-        iv: iv,
-    },
-        key,
-        encryptedData
-    );
-
-    const decryptedString = new TextDecoder().decode(decryptedData);
-    return decryptedString;
+export const decryptSessionKey = async (derivedKey: CryptoKey, saltEnKey: Uint8Array<ArrayBuffer>) => {
+    try {
+        const encryptedKey = sessionStorage.getItem("encryptedKey");
+        const encryptedKeyBuffer = base64ToArrayBuffer(encryptedKey!);
+        const dataEnKey =  await decryptDerivedKey(derivedKey, encryptedKeyBuffer, saltEnKey);
+      return dataEnKey;
+    } catch (error) {
+        const err = error as Error;
+        console.log(err.message);
+    }
 }
