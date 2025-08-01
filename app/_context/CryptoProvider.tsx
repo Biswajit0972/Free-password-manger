@@ -1,3 +1,5 @@
+"use client";
+
 import { FC, ReactNode, createContext, useContext, useState } from "react";
 
 type CryptoContextType = {

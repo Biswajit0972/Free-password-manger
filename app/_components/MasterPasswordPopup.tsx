@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { cryptoKeyGen } from "../_utils/functions/keyGen";
+import { arrayBufferToBase64 } from "../_utils/functions/keyHelper";
+import { useCryptoContext } from "../_context/CryptoProvider";
 
 type MasterPasswordPopupProps = {
   setSession: React.Dispatch<React.SetStateAction<boolean | null>>;
@@ -11,16 +13,31 @@ export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
 }) => {
   const [masterPassword, setMasterPassword] = useState<string>("");
   const [updating, setUpdating] = useState<boolean>(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const { setDerivedKey } = useCryptoContext();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdating(true);
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     const masterPassword = formData.get("masterPassword") as string;
-    // const salt = crypto.getRandomValues(new Uint8Array(16));
-     cryptoKeyGen(masterPassword);
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const saltEn = crypto.getRandomValues(new Uint8Array(16));
+    const keyIv = crypto.getRandomValues(new Uint8Array(12));
+
+    const dataSalt = arrayBufferToBase64(salt.buffer);
+    const keySalt = arrayBufferToBase64(saltEn.buffer);
+    const keyIvSalt = arrayBufferToBase64(keyIv.buffer);
+
+    const derivedKey = await cryptoKeyGen(
+      masterPassword,
+      dataSalt,
+      keySalt,
+      keyIvSalt
+    );
+    setDerivedKey(derivedKey!);
     setUpdating(false);
+
+    setSession(true);
   };
 
   return (
@@ -60,7 +77,7 @@ export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
           />
           <button
             type="submit"
-            className="w-full p-2 bg-blue-700 hover:bg-blue-800 text-white rounded font-semibold transition-colors"
+            className="w-full p-2 bg-blue-700 hover:bg-blue-800 text-white rounded font-semibold transition-colors cursor-pointer"
             disabled={updating}
           >
             Submit
