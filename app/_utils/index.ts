@@ -124,3 +124,18 @@ export type passwordForm  = {
   username: string;
   password: string;
 }
+
+export type EncryptionResponse = {
+  statusCode: number;
+  message: string;
+  data: {
+    _id: string;
+    saltDataKey: string;
+    saltEnKey: string;
+    EnIvKey: string;
+    EnIvData: string;
+    updatedAt: string;
+    __v: number;
+  };
+  status: string;
+};

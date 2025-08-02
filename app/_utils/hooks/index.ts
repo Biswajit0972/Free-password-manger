@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import { fetchUserData } from "../functions/fetch";
 
 export const useFetch = <T,>(queryKey: string, queryFn: () => Promise<T>) => {
     const { data, error, isLoading } = useQuery<T>({
@@ -17,9 +18,9 @@ export const useFetch = <T,>(queryKey: string, queryFn: () => Promise<T>) => {
     return { data, isLoading }
 }
 
-export const useCustomMutation = <T>(mutationKey: string, mutationFn: (data?: T) => Promise<T>) => {
+export const useGetUserData = ( ) => {
     return useMutation({
-        mutationKey: [mutationKey],
-        mutationFn
+        mutationKey: ["userData"],
+        mutationFn: (user_id:  string) => fetchUserData(user_id)
     });
 }
