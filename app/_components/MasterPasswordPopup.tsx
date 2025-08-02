@@ -1,8 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { cryptoKeyGen } from "../_utils/functions/keyGen";
-import { arrayBufferToBase64 } from "../_utils/functions/keyHelper";
 import { useCryptoContext } from "../_context/CryptoProvider";
+import { useGetUserData } from "../_utils/hooks";
+import { useAuth } from "@clerk/nextjs";
+import { EncryptionResponse } from "../_utils";
+import { toast } from "react-toastify";
 
 type MasterPasswordPopupProps = {
   setSession: React.Dispatch<React.SetStateAction<boolean | null>>;
@@ -12,31 +15,40 @@ export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
   setSession,
 }) => {
   const [masterPassword, setMasterPassword] = useState<string>("");
-  const [updating, setUpdating] = useState<boolean>(false);
   const { setDerivedKey } = useCryptoContext();
+  const { userId } = useAuth();
+
+  const { isPending, error, mutateAsync } = useGetUserData();
+
+  if (error) {
+    console.error("Error fetching user data:", error);
+  }
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setUpdating(true);
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     const masterPassword = formData.get("masterPassword") as string;
-    const salt = crypto.getRandomValues(new Uint8Array(16));
-    const saltEn = crypto.getRandomValues(new Uint8Array(16));
-    const keyIv = crypto.getRandomValues(new Uint8Array(12));
 
-    const dataSalt = arrayBufferToBase64(salt.buffer);
-    const keySalt = arrayBufferToBase64(saltEn.buffer);
-    const keyIvSalt = arrayBufferToBase64(keyIv.buffer);
+    const user: EncryptionResponse = await mutateAsync(userId!.split("_")[1]);
+
+    if (!user.data._id) {
+      console.error("User ID not found in response data");
+      return;
+    }
 
     const derivedKey = await cryptoKeyGen(
       masterPassword,
-      dataSalt,
-      keySalt,
-      keyIvSalt
+      user.data.saltDataKey,
+      user.data.saltEnKey,
+      user.data.EnIvKey
     );
-    setDerivedKey(derivedKey!);
-    setUpdating(false);
 
+    if (!derivedKey) {
+      toast.error("Failed to generate derived key. Please try again.");
+      return;
+    }
+    setDerivedKey(derivedKey);
     setSession(true);
   };
 
@@ -78,9 +90,9 @@ export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
           <button
             type="submit"
             className="w-full p-2 bg-blue-700 hover:bg-blue-800 text-white rounded font-semibold transition-colors cursor-pointer"
-            disabled={updating}
+            disabled={isPending}
           >
-            Submit
+            {isPending ? "Loading..." : "Submit"}
           </button>
         </form>
       </div>
