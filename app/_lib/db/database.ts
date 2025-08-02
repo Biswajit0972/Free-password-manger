@@ -10,6 +10,8 @@ export const databaseConnection = async (): Promise<void> => {
         }
         const res = await mongoose.connect(process.env.MONGODB_URI || "");
         isDatabaseConnected = res.connections[0].readyState;
+        console.log("database connected successfully");
+        return;
     } catch (err: unknown) {
         console.log(err);
         console.log("Database connection failed");
