@@ -12,6 +12,8 @@ async function createPassword(req: NextRequest) {
         throw new ErrorResponse(400, "All fields are required");
     }
 
+    
+
     const newPassword = await PasswordModel.create({
         user_id,
         username,

@@ -3,8 +3,14 @@ import Image from "next/image";
 import demoImg from "@/public/download (2).gif";
 import Input from "./Input";
 import { useForm } from "react-hook-form";
-import { passwordForm } from "../_utils";
+import { EncryptionResponse, passwordForm } from "../_utils";
 import { useApplicationcontext } from "../_context/Context";
+import { useCreatePassword, useGetUserData } from "../_utils/hooks";
+import { useAuth } from "@clerk/nextjs";
+import { decryptSessionKey } from "../_utils/functions/keyGen";
+import { useCryptoContext } from "../_context/CryptoProvider";
+import { encryptData } from "../_utils/functions/keyHelper";
+import { IPassword } from "../_lib/models/password/password.model";
 
 const PasswordForm = () => {
   const {
@@ -23,9 +29,57 @@ const PasswordForm = () => {
       password: password.length > 0 ? password : "",
     },
   });
+  const { userId } = useAuth();
+  const { error, mutateAsync: getUser } = useGetUserData();
+  const { mutateAsync: createPassword, error: createError } =
+    useCreatePassword();
+  const { derivedKey } = useCryptoContext();
+  if (error) {
+    console.error("Error fetching user data:", error);
+  }
 
-  const onSubmit = (data: passwordForm) => {
-    console.log(data);
+  const onSubmit = async (data: passwordForm) => {
+    const { applicationLink, username, password } = data;
+    const user: EncryptionResponse = await getUser(userId!.split("_")[1]);
+
+    if (!user.data._id) {
+      console.error("User ID not found in response data");
+      return;
+    }
+
+    const enIv = user.data.EnIvKey;
+    const dataEnkey = await decryptSessionKey(derivedKey!, enIv);
+
+    if (!dataEnkey) {
+      console.error("Failed to decrypt session key");
+      return;
+    }
+
+    const enDataIv = user.data.EnIvData;
+
+    const { cipherText, iv } = await encryptData(password, dataEnkey, enDataIv);
+
+    if (!cipherText || !iv) {
+      console.error("Failed to encrypt password data");
+      return;
+    }
+
+    const passwordObj = {
+      user_id: user.data._id,
+      username,
+      application_link: applicationLink,
+      password_obj: {
+        password: cipherText,
+        iv: enDataIv,
+      },
+    } as IPassword;
+
+    await createPassword(passwordObj);
+
+    if (createError) {
+      console.log(createError.message);
+      return;
+    }
   };
 
   return (
