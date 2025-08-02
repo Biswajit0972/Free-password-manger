@@ -34,4 +34,3 @@ export const decryptSessionKey = async (derivedKey: CryptoKey, enIv: Uint8Array<
         console.log(err.message);
     }
 }
-
