@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
-type Password = {
+export type Password = {
     password: string;
     iv: string;
 }
