@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { base64ToArrayBuffer, decryptData, encryptData } from "../_utils/functions/keyHelper";
+import { useCryptoContext } from "../_context/CryptoProvider";
+import { decryptSessionKey } from "../_utils/functions/keyGen";
 
 const PasswordRender = ({
   Username,
@@ -10,7 +13,19 @@ const PasswordRender = ({
   Password: string;
 }) => {
   const [passwordToggler, setpasswordToggler] = useState<boolean>(false);
-  console.log(Password);
+  const {derivedKey} = useCryptoContext();
+  const testing =   async () => {
+    const cipherEnIv =  sessionStorage.getItem("enIv");
+   
+    const cipherEnIvBuffer = base64ToArrayBuffer(cipherEnIv!);
+  
+    const dataEnkey = await decryptSessionKey(derivedKey!, cipherEnIvBuffer);
+    const {cipherText, iv} = await encryptData(Password, dataEnkey!, cipherEnIvBuffer);
+    const data = await decryptData(base64ToArrayBuffer(cipherText).buffer, dataEnkey!, cipherEnIvBuffer);
+    console.log("actual data", Password);
+    console.log("cipher text", cipherText);
+    console.log("decrypted data", data);
+  }
   return (
     <div className="w-full  p-2 bg-gray-100 rounded-md shadow-sm mb-1 ">
       <div className="text-sm font-medium text-gray-700 border-b border-gray-300 py-1 h-8 flex items-center gap-3">
@@ -26,7 +41,9 @@ const PasswordRender = ({
         />
         <div className="w-[15%] flex-between  text-lg">
           <button
-            onClick={() => setpasswordToggler(!passwordToggler)}
+            onClick={() => {setpasswordToggler(!passwordToggler)
+              testing()
+            }}
             className="bg-gray-300 rounded-md cursor-pointer"
           >
             {passwordToggler ? "🙈" : "👁️"}
