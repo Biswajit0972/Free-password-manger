@@ -14,7 +14,7 @@ const Password = () => {
   const [open, setOpen] = useState<boolean>(false);
   const {derivedKey} =  useCryptoContext();
  
-
+  
   return (
     <div className="w-full h-full relative px-5 py-1 overflow-hidden flex-column">
       {derivedKey ? (
