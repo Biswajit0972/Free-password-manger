@@ -51,32 +51,32 @@ export const genDerivedKey = async (baseKey: CryptoKey, salt: Uint8Array<ArrayBu
 
 // ? password and username encryption and decryption started here
 
-export const encryptData = async (data: string, key: CryptoKey, iv: Uint8Array<ArrayBuffer>): Promise<{ cipherText: string, iv: string }> => {
+export const encryptData = async (data: string, key: CryptoKey, iv: string): Promise<{ cipherText: string, iv: string }> => {
     const enc = new TextEncoder();
     const stringToArray = enc.encode(data);
-
+    const ivBuffer = base64ToArrayBuffer(iv);
 
     const encryptedData = await window.crypto.subtle.encrypt({
         name: "AES-GCM",
-        iv: iv,
+        iv: ivBuffer,
     },
         key,
         stringToArray
     );
 
     const encryptedBase64 = arrayBufferToBase64(encryptedData);
-    const ivBase64 = arrayBufferToBase64(iv.buffer);
+    const ivBase64 = arrayBufferToBase64(ivBuffer.buffer);
 
     return { cipherText: encryptedBase64, iv: ivBase64 };
 }
 
-export const decryptData = async (encryptedData: ArrayBuffer, key: CryptoKey, iv: Uint8Array<ArrayBuffer>): Promise<string> => {
+export const decryptData = async (encryptedData: string, key: CryptoKey, iv: string): Promise<string> => {
     const decryptedData = await window.crypto.subtle.decrypt({
         name: "AES-GCM",
-        iv: iv,
+        iv: base64ToArrayBuffer(iv),
     },
         key,
-        encryptedData
+        base64ToArrayBuffer(encryptedData)
     );
 
     const decryptedString = new TextDecoder().decode(decryptedData);
@@ -118,6 +118,6 @@ export const decryptDerivedKey = async (baseKey: CryptoKey, cipheredKey: Uint8Ar
         true,
         ["encrypt", "decrypt"]
     );
-   
+
     return derivedKey;
 }
