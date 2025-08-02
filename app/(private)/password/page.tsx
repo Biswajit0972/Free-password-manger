@@ -4,26 +4,20 @@ import CustomUl from "@/app/_components/CustomUl";
 import Dropdown from "@/app/_components/Dropdown";
 import { MasterPasswordPopup } from "@/app/_components/MasterPasswordPopup";
 import PasswordForm from "@/app/_components/PasswordForm";
+import { useCryptoContext } from "@/app/_context/CryptoProvider";
 import { fakeData } from "@/app/_utils";
-import { useAuth } from "@clerk/nextjs";
 import { FolderPlus } from "@deemlol/next-icons";
 import React, { useState } from "react";
 
 const Password = () => {
 
   const [open, setOpen] = useState<boolean>(false);
-  const { isLoaded, sessionId } = useAuth();
-  const [session, setSession] = useState<boolean | null>(() => {
-    if (isLoaded && sessionId) {
-      const { userKey } = JSON.parse(sessionStorage.getItem("userKey") || "{}");
-      return !userKey ? true : false;
-    }
-    return null;
-  });
+  const {derivedKey} =  useCryptoContext();
+ 
 
   return (
     <div className="w-full h-full relative px-5 py-1 overflow-hidden flex-column">
-      {session ? (
+      {derivedKey ? (
         <div className="w-full h-full relative ">
           <h1 className="secondary-font text-center font-bold ">
             Password Store
@@ -51,7 +45,7 @@ const Password = () => {
           </button>
         </div>
       ) : (
-        <MasterPasswordPopup setSession={setSession} />
+        <MasterPasswordPopup />
       )}
     </div>
   );

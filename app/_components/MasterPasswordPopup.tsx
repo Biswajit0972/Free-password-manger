@@ -7,13 +7,9 @@ import { useAuth } from "@clerk/nextjs";
 import { EncryptionResponse } from "../_utils";
 import { toast } from "react-toastify";
 
-type MasterPasswordPopupProps = {
-  setSession: React.Dispatch<React.SetStateAction<boolean | null>>;
-};
 
-export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
-  setSession,
-}) => {
+
+export const MasterPasswordPopup = () => {
   const [masterPassword, setMasterPassword] = useState<string>("");
   const { setDerivedKey } = useCryptoContext();
   const { userId } = useAuth();
@@ -49,20 +45,13 @@ export const MasterPasswordPopup: React.FC<MasterPasswordPopupProps> = ({
       return;
     }
     setDerivedKey(derivedKey);
-    setSession(true);
+    
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="relative bg-white p-8 rounded-lg w-80 max-w-full shadow-lg flex flex-col items-center">
-        <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-lg"
-          aria-label="Close"
-          onClick={() => setSession(true)}
-          type="button"
-        >
-          ✖
-        </button>
+      
         <h2 className="text-xl font-semibold mb-4">Enter Master Password</h2>
         <div className="mb-4 text-center text-red-600 font-semibold">
           ⚠️ Please{" "}
