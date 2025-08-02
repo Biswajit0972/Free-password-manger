@@ -7,6 +7,7 @@ import Navbar from "./_components/Navbar";
 import { Bounce, ToastContainer } from "react-toastify";
 import { PasswordProvider } from "./_context/Context";
 import { CryptoProvider } from "./_context/CryptoProvider";
+import Providers from "./query/Provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,7 +41,9 @@ export default function RootLayout({
           >
             <Navbar />
             <main className="max-w-screen relative h-[calc(100vh-4.5rem)] overflow-x-hidden">
-              <CryptoProvider>{children}</CryptoProvider>
+              <Providers>
+                <CryptoProvider>{children}</CryptoProvider>
+              </Providers>
             </main>
             <ToastContainer
               position="bottom-right"
