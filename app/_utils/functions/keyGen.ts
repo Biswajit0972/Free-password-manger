@@ -22,11 +22,12 @@ export const cryptoKeyGen = async (masterPassword: string, saltKey: string, salt
     }
 }
 
-export const decryptSessionKey = async (derivedKey: CryptoKey, saltEnKey: Uint8Array<ArrayBuffer>) => {
+export const decryptSessionKey = async (derivedKey: CryptoKey, enIv: Uint8Array<ArrayBuffer>) => {
     try {
         const encryptedKey = sessionStorage.getItem("encryptedKey");
         const encryptedKeyBuffer = base64ToArrayBuffer(encryptedKey!);
-        const dataEnKey =  await decryptDerivedKey(derivedKey, encryptedKeyBuffer, saltEnKey);
+        
+        const dataEnKey =  await decryptDerivedKey(derivedKey, encryptedKeyBuffer, enIv);
       return dataEnKey;
     } catch (error) {
         const err = error as Error;

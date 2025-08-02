@@ -104,7 +104,6 @@ export const encryptDerivedKey = async (baseKey: CryptoKey, derivedKey: CryptoKe
 }
 
 export const decryptDerivedKey = async (baseKey: CryptoKey, cipheredKey: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer>) => {
-
     const rawDerivedKey = await window.crypto.subtle.decrypt({
         name: "AES-GCM",
         iv: iv.buffer
