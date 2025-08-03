@@ -4,17 +4,18 @@ import CustomUl from "@/app/_components/CustomUl";
 import Dropdown from "@/app/_components/Dropdown";
 import { MasterPasswordPopup } from "@/app/_components/MasterPasswordPopup";
 import PasswordForm from "@/app/_components/PasswordForm";
+import { useApplicationcontext } from "@/app/_context/Context";
 import { useCryptoContext } from "@/app/_context/CryptoProvider";
 import { SiteData } from "@/app/_utils";
 import { fetchPasswords } from "@/app/_utils/functions/fetch";
 import { useAuth } from "@clerk/nextjs";
 import { FolderPlus } from "@deemlol/next-icons";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+
 import { toast } from "react-toastify";
 
 const Password = () => {
-  const [open, setOpen] = useState<boolean>(false);
+  const {state, dispatch} = useApplicationcontext();
   const { derivedKey } = useCryptoContext();
   const { userId } = useAuth();
 
@@ -54,15 +55,17 @@ const Password = () => {
           ) : (
             "No passwords found"
           )}
-          {open && <PasswordForm setOpen={setOpen}/>}
+          {state.openForm && <PasswordForm/>}
         </div>
 
-        <button
+       {
+        !state.openForm &&  <button
           className="h-15 w-15 absolute bottom-2 right-2 bg-green-500 rounded-full cursor-pointer flex-center hover:bg-green-600 transition-all duration-300 z-10"
-          onClick={() => setOpen(!open)}
+          onClick={() => dispatch({type:"TOGGLE_FORM"})}
         >
           <FolderPlus size={24} color="#FFFFFF" />
         </button>
+       }
       </div>
     </div>
   );
