@@ -1,15 +1,26 @@
 "use client";
 
-import React, { createContext, useReducer, ReactNode, Dispatch, useContext } from "react";
+import React, {
+  createContext,
+  useReducer,
+  ReactNode,
+  Dispatch,
+  useContext,
+} from "react";
 
 type StateType = {
   password: string;
+  openForm: boolean;
 };
 
-type Actions = {
-  type: "ADD_PASSWORD";
-  payload: string;
-} ;
+type Actions =
+  | {
+      type: "ADD_PASSWORD";
+      payload: string;
+    }
+  | {
+      type: "TOGGLE_FORM";
+    };
 
 type ContextType = {
   state: StateType;
@@ -18,6 +29,7 @@ type ContextType = {
 
 const initialState: StateType = {
   password: "",
+  openForm: false,
 };
 
 const PasswordContext = createContext<ContextType>({
@@ -28,7 +40,9 @@ const PasswordContext = createContext<ContextType>({
 function reducer(state: StateType, action: Actions): StateType {
   switch (action.type) {
     case "ADD_PASSWORD":
-      return { ...state, password: action.payload };
+      return { ...state, password: action.payload, openForm: true };
+    case "TOGGLE_FORM":
+      return { ...state, openForm: !state.openForm };
     default:
       console.warn("Unknown action type");
       return state;
@@ -48,9 +62,11 @@ const PasswordProvider = ({ children }: { children: ReactNode }) => {
 const useApplicationcontext = () => {
   const context = useContext(PasswordContext);
   if (context === undefined) {
-    throw new Error("useApplicationcontext must be used within a PasswordProvider");
+    throw new Error(
+      "useApplicationcontext must be used within a PasswordProvider"
+    );
   }
   return context;
-}
+};
 
-export { PasswordProvider, PasswordContext,  useApplicationcontext };
+export { PasswordProvider, PasswordContext, useApplicationcontext };

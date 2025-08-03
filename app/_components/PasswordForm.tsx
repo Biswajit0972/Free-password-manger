@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import demoImg from "@/public/download (2).gif";
 import Input from "./Input";
@@ -13,9 +13,10 @@ import { encryptData } from "../_utils/functions/keyHelper";
 import { IPassword } from "../_lib/models/password/password.model";
 import { toast } from "react-toastify";
 
-const PasswordForm = ({setOpen} : {setOpen: Dispatch<SetStateAction<boolean>>}) => {
+const PasswordForm = () => {
   const {
     state: { password },
+    dispatch,
   } = useApplicationcontext();
   const [icon, setIcon] = useState<string>("");
 
@@ -30,10 +31,14 @@ const PasswordForm = ({setOpen} : {setOpen: Dispatch<SetStateAction<boolean>>}) 
       password: password.length > 0 ? password : "",
     },
   });
+
   const { userId } = useAuth();
   const { error, mutateAsync: getUser } = useGetUserData();
-  const { mutateAsync: createPassword, error: createError, isPending } =
-    useCreatePassword();
+  const {
+    mutateAsync: createPassword,
+    error: createError,
+    isPending,
+  } = useCreatePassword();
   const { derivedKey } = useCryptoContext();
   if (error) {
     console.error("Error fetching user data:", error);
@@ -83,11 +88,18 @@ const PasswordForm = ({setOpen} : {setOpen: Dispatch<SetStateAction<boolean>>}) 
       return;
     }
 
-    setOpen(false);
+    dispatch({ type: "TOGGLE_FORM" });
+    toast.success("Password created successfully");
   };
 
   return (
     <div className="w-[95%] absolute bottom-8 left-1/2 -translate-x-1/2  p-4 bg-white rounded-lg shadow-lg z-10">
+      <button
+        className="absolute top-2 right-2 text-red-500 hover:text-red-700  rounded-full bg-gray-500 hover:bg-gray-300 transition-colors duration-300 ease-in-out h-10 w-10 flex-center cursor-pointer z-10"
+        onClick={() => dispatch({ type: "TOGGLE_FORM" })}
+      >
+        <p className="relative z-0">X</p>
+      </button>
       <form
         className="relative w-full flex-center-column gap-3 px-2"
         onSubmit={handleSubmit(onSubmit)}
@@ -157,9 +169,7 @@ const PasswordForm = ({setOpen} : {setOpen: Dispatch<SetStateAction<boolean>>}) 
           )}
         </div>
         <button className="w-full bg-green-500 text-white font-semibold rounded-full h-8 cursor-pointer hover:bg-green-600 transition-colors duration-300">
-         {
-          isPending? "Creating...": "Add Password"
-         }
+          {isPending ? "Creating..." : "Add Password"}
         </button>
       </form>
     </div>
