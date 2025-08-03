@@ -9,7 +9,7 @@ type StateType = {
 type Actions = {
   type: "ADD_PASSWORD";
   payload: string;
-};
+} ;
 
 type ContextType = {
   state: StateType;

@@ -25,3 +25,14 @@ export const createPassword = async (user_id: string, username: string, password
         console.error("Error creating password:", err.message);
     }
 }
+
+export const fetchPasswords = async (user_id: string) => {
+    try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/password/getPassword?user_id=${user_id}`);
+        return response.data!.data;
+    } catch (error) {
+        const err = error as Error;
+        console.error("Error fetching passwords:", err.message);
+        return err.message;
+    }
+}
