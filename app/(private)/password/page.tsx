@@ -5,48 +5,63 @@ import Dropdown from "@/app/_components/Dropdown";
 import { MasterPasswordPopup } from "@/app/_components/MasterPasswordPopup";
 import PasswordForm from "@/app/_components/PasswordForm";
 import { useCryptoContext } from "@/app/_context/CryptoProvider";
-import { fakeData } from "@/app/_utils";
+import { SiteData } from "@/app/_utils";
+import { fetchPasswords } from "@/app/_utils/functions/fetch";
+import { useAuth } from "@clerk/nextjs";
 import { FolderPlus } from "@deemlol/next-icons";
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 const Password = () => {
-
   const [open, setOpen] = useState<boolean>(false);
-  const {derivedKey} =  useCryptoContext();
- 
-  
+  const { derivedKey } = useCryptoContext();
+  const { userId } = useAuth();
+
+  const {
+    data: passwords,
+    isLoading,
+    error,
+  } = useQuery<SiteData[]>({
+    queryKey: ["passwords"],
+    queryFn: () => fetchPasswords(userId!.split("_")[1]),
+    enabled: !!userId,
+  });
+
+  if (!derivedKey) return <MasterPasswordPopup />;
+
+  if (error) {
+    toast.error("Failed to fetch passwords. Please try again later.");
+  }
   return (
     <div className="w-full h-full relative px-5 py-1 overflow-hidden flex-column">
-      {derivedKey ? (
-        <div className="w-full h-full relative ">
-          <h1 className="secondary-font text-center font-bold ">
-            Password Store
-          </h1>
-          <div className="w-full h-[calc(100%-2rem)]   bg-gray-200 p-1 rounded-lg relative">
+      <div className="w-full h-full relative ">
+        <h1 className="secondary-font text-center font-bold ">
+          Password Store
+        </h1>
+        <div className="w-full h-[calc(100%-2rem)]   bg-gray-200 p-1 rounded-lg relative">
+          {isLoading ? (
+            <div className="flex-center h-full">Loading...</div>
+          ) : passwords && passwords.length > 0 ? (
             <CustomUl
-              data={fakeData}
-              render={(data, index) => (
-                <Dropdown
-                  key={index}
-                  appName={data.sitename}
-                  userDetails={data.account}
-                  image={data.icon}
-                />
+              data={passwords}
+              render={(password) => (
+                <Dropdown key={password.sitename} data={password} />
               )}
             />
-            {open && <PasswordForm />}
-          </div>
-
-          <button
-            className="h-15 w-15 absolute bottom-2 right-2 bg-green-500 rounded-full cursor-pointer flex-center hover:bg-green-600 transition-all duration-300 z-10"
-            onClick={() => setOpen(!open)}
-          >
-            <FolderPlus size={24} color="#FFFFFF" />
-          </button>
+          ) : (
+            "No passwords found"
+          )}
+          {open && <PasswordForm />}
         </div>
-      ) : (
-        <MasterPasswordPopup />
-      )}
+
+        <button
+          className="h-15 w-15 absolute bottom-2 right-2 bg-green-500 rounded-full cursor-pointer flex-center hover:bg-green-600 transition-all duration-300 z-10"
+          onClick={() => setOpen(!open)}
+        >
+          <FolderPlus size={24} color="#FFFFFF" />
+        </button>
+      </div>
     </div>
   );
 };
