@@ -20,7 +20,7 @@ const PasswordRender = ({
   const { derivedKey } = useCryptoContext();
   const { userId } = useAuth();
   const { error, mutateAsync } = useGetUserData();
-
+  
   if (error) {
     console.error("Error fetching user data:", error);
   }

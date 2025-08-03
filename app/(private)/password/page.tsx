@@ -33,6 +33,7 @@ const Password = () => {
   if (error) {
     toast.error("Failed to fetch passwords. Please try again later.");
   }
+  
   return (
     <div className="w-full h-full relative px-5 py-1 overflow-hidden flex-column">
       <div className="w-full h-full relative ">
@@ -45,6 +46,7 @@ const Password = () => {
           ) : passwords && passwords.length > 0 ? (
             <CustomUl
               data={passwords}
+              className="w-full h-full overflow-y-auto "
               render={(password) => (
                 <Dropdown key={password.sitename} data={password} />
               )}

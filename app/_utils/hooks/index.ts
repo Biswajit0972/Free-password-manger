@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { createPassword, fetchUserData } from "../functions/fetch";
 import { IPassword } from "@/app/_lib/models/password/password.model";
+import { queryClient } from "@/app/query/Provider";
 
 export const useFetch = <T,>(queryKey: string, queryFn: () => Promise<T>) => {
     const { data, error, isLoading } = useQuery<T>({
@@ -29,6 +30,9 @@ export const useGetUserData = () => {
 export const useCreatePassword = () => {
     return useMutation({
         mutationKey: ["createPassword"],
-        mutationFn: (data: IPassword) => createPassword(data.user_id, data.username, data.password_obj, data.application_link)
+        mutationFn: (data: IPassword) => createPassword(data.user_id, data.username, data.password_obj, data.application_link),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["passwords"] });
+        }
     });
 }

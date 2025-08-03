@@ -33,6 +33,6 @@ export const fetchPasswords = async (user_id: string) => {
     } catch (error) {
         const err = error as Error;
         console.error("Error fetching passwords:", err.message);
-        return err.message;
+        return [];
     }
 }
