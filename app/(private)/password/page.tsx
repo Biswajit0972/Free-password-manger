@@ -54,7 +54,7 @@ const Password = () => {
           ) : (
             "No passwords found"
           )}
-          {open && <PasswordForm />}
+          {open && <PasswordForm setOpen={setOpen}/>}
         </div>
 
         <button

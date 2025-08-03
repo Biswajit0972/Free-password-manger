@@ -7,6 +7,7 @@ import { decryptSessionKey } from "../_utils/functions/keyGen";
 import { useAuth } from "@clerk/nextjs";
 import { EncryptionResponse } from "../_utils";
 import { useGetUserData } from "../_utils/hooks";
+import { toast } from "react-toastify";
 
 const PasswordRender = ({
   Username,
@@ -20,12 +21,12 @@ const PasswordRender = ({
   const { derivedKey } = useCryptoContext();
   const { userId } = useAuth();
   const { error, mutateAsync } = useGetUserData();
-  
+
   if (error) {
     console.error("Error fetching user data:", error);
   }
 
-  const testing = async () => {
+  const decryptHelper = async (): Promise<string | void> => {
     const user: EncryptionResponse = await mutateAsync(userId!.split("_")[1]);
 
     if (!user.data._id) {
@@ -46,9 +47,58 @@ const PasswordRender = ({
       user.data.EnIvData
     );
 
-    setPassword(decryptedPassword);
+    return decryptedPassword;
   };
 
+  const testing = async () => {
+    try {
+      // const user: EncryptionResponse = await mutateAsync(userId!.split("_")[1]);
+
+      // if (!user.data._id) {
+      //   console.error("User ID not found in response data");
+      //   return;
+      // }
+
+      // const enIv = user.data.EnIvKey;
+      // const dataEnkey = await decryptSessionKey(derivedKey!, enIv);
+      // if (!dataEnkey) {
+      //   console.error("Failed to decrypt session key");
+      //   return;
+      // }
+
+      // const decryptedPassword = await decryptData(
+      //   Password,
+      //   dataEnkey,
+      //   user.data.EnIvData
+      // );
+
+      const decryptedPassword = await decryptHelper();
+
+      if (!decryptedPassword) {
+        throw new Error("something wents wrong");
+      }
+      setPassword(decryptedPassword);
+      setpasswordToggler(!passwordToggler);
+    } catch (error) {
+      console.error("Error during password decryption:", error);
+      toast.error("Failed to decrypt password. Please try again.");
+    }
+  };
+
+  const clipBoardHelper = async (): Promise<void> => {
+    try {
+      const copyPassword = await decryptHelper();
+      if (!copyPassword) {
+        throw new Error("falied to decrypt password!");
+      }
+
+      navigator.clipboard.writeText(copyPassword);
+      toast.success("password copied to clipboard");
+    } catch (error) {
+      const err = error as Error;
+      toast.error(err.message || "falied to copied password, please try again");
+    }
+  };
   return (
     <div className="w-full  p-2 bg-gray-100 rounded-md shadow-sm mb-1 ">
       <div className="text-sm font-medium text-gray-700 border-b border-gray-300 py-1 h-8 flex items-center gap-3">
@@ -66,7 +116,6 @@ const PasswordRender = ({
         <div className="w-[15%] flex-between  text-lg">
           <button
             onClick={() => {
-              setpasswordToggler(!passwordToggler);
               testing();
             }}
             className="bg-gray-300 rounded-md cursor-pointer"
@@ -75,7 +124,7 @@ const PasswordRender = ({
           </button>
           <button
             className="bg-gray-300 rounded-md cursor-pointer"
-            onClick={() => navigator.clipboard.writeText(Password)}
+            onClick={() => clipBoardHelper()}
           >
             📋
           </button>

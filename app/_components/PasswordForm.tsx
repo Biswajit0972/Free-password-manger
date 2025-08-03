@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import Image from "next/image";
 import demoImg from "@/public/download (2).gif";
 import Input from "./Input";
@@ -11,8 +11,9 @@ import { decryptSessionKey } from "../_utils/functions/keyGen";
 import { useCryptoContext } from "../_context/CryptoProvider";
 import { encryptData } from "../_utils/functions/keyHelper";
 import { IPassword } from "../_lib/models/password/password.model";
+import { toast } from "react-toastify";
 
-const PasswordForm = () => {
+const PasswordForm = ({setOpen} : {setOpen: Dispatch<SetStateAction<boolean>>}) => {
   const {
     state: { password },
   } = useApplicationcontext();
@@ -31,11 +32,12 @@ const PasswordForm = () => {
   });
   const { userId } = useAuth();
   const { error, mutateAsync: getUser } = useGetUserData();
-  const { mutateAsync: createPassword, error: createError } =
+  const { mutateAsync: createPassword, error: createError, isPending } =
     useCreatePassword();
   const { derivedKey } = useCryptoContext();
   if (error) {
     console.error("Error fetching user data:", error);
+    toast.error("intenal server issue, please try again");
   }
 
   const onSubmit = async (data: passwordForm) => {
@@ -80,6 +82,8 @@ const PasswordForm = () => {
       console.log(createError.message);
       return;
     }
+
+    setOpen(false);
   };
 
   return (
@@ -153,7 +157,9 @@ const PasswordForm = () => {
           )}
         </div>
         <button className="w-full bg-green-500 text-white font-semibold rounded-full h-8 cursor-pointer hover:bg-green-600 transition-colors duration-300">
-          Add Password
+         {
+          isPending? "Creating...": "Add Password"
+         }
         </button>
       </form>
     </div>
