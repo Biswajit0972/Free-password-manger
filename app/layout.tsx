@@ -35,31 +35,31 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <PasswordProvider>
-        <html lang="en">
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <Navbar />
-            <main className="max-w-screen relative h-[calc(100vh-4.5rem)] overflow-x-hidden">
-              <Providers>
-                <CryptoProvider>{children}</CryptoProvider>
-              </Providers>
-            </main>
-            <ToastContainer
-              position="bottom-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick={false}
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-              transition={Bounce}
-            />
-          </body>
-        </html>
+        <CryptoProvider>
+          <html lang="en">
+            <body
+              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            >
+              <Navbar />
+              <main className="max-w-screen relative h-[calc(100vh-4.5rem)] overflow-x-hidden">
+                <Providers>{children}</Providers>
+              </main>
+              <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition={Bounce}
+              />
+            </body>
+          </html>
+        </CryptoProvider>
       </PasswordProvider>
     </ClerkProvider>
   );
