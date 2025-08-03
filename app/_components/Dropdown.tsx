@@ -2,15 +2,15 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
-import fakeLogo from "@/public/download (2).gif";
 import { ChevronDown, ChevronUp } from "@deemlol/next-icons";
-import { User } from "../_utils";
+import { SiteData } from "../_utils";
 import PasswordRender from "./PasswordRender";
 import CustomUl from "./CustomUl";
 
-const Dropdown = ({appName, userDetails=[], image}: {appName: string; userDetails: User[]; image?: string}) => {
+const Dropdown = ({ data }: { data: SiteData }) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
-  
+  const siteImage = data.sitename.split("/");
+
   return (
     <div className="relative w-full max-h-60 flex-column gap-2 overflow-hidden mb-2">
       <div
@@ -19,9 +19,19 @@ const Dropdown = ({appName, userDetails=[], image}: {appName: string; userDetail
       >
         <div className="max-w-1/2 h-full flex-between gap-2 ">
           <div className="w-10 h-10 rounded-full object-cover overflow-hidden ">
-            <Image src={image || fakeLogo} alt="app icon" className="object-cover"  height={40} width={40}/>
+            <Image
+              src={`https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${
+                siteImage[siteImage.length - 1]
+              }&size=128`}
+              alt="app icon"
+              className="object-cover"
+              height={40}
+              width={40}
+            />
           </div>
-          <span className="text-white font-bold text-sm capitalize">{appName}</span>
+          <span className="text-white font-bold text-sm capitalize">
+            {siteImage[siteImage.length - 1]}
+          </span>
         </div>
         <div className="relative">
           {isDropDownOpen ? (
@@ -31,21 +41,24 @@ const Dropdown = ({appName, userDetails=[], image}: {appName: string; userDetail
           )}
         </div>
       </div>
-     {
-      isDropDownOpen &&  <div
-        className={`w-full bg-gray-500 rounded-md 
+      {isDropDownOpen && (
+        <div
+          className={`w-full bg-gray-500 rounded-md 
            max-h-60 
          transition-all ease-in-out p-1 overflow-auto  `}
-      >
-       <CustomUl data={userDetails} render={(user, index) => (
-          <PasswordRender
-            Username={user.username}
-            Password={user.password}
-            key={index}
+        >
+          <CustomUl
+            data={data.accounts}
+            render={(user, index) => (
+              <PasswordRender
+                Username={user.username}
+                Password={user.password}
+                key={index}
+              />
+            )}
           />
-        )}/>
-      </div>
-     }
+        </div>
+      )}
     </div>
   );
 };
