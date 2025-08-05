@@ -100,7 +100,7 @@ const PasswordRender = ({
     }
   };
   return (
-    <div className="w-full  p-2 bg-gray-100 rounded-md shadow-sm mb-1 ">
+    <div className="w-full  p-2 bg-gray-100 rounded-md shadow-sm mb-1 max-h-28">
       <div className="text-sm font-medium text-gray-700 border-b border-gray-300 py-1 h-8 flex items-center gap-3">
         <span className="font-bold text-[14px]">Username:</span>{" "}
         <h3 className="font-semibold text-sm text-gray-800">{Username}</h3>

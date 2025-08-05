@@ -81,8 +81,8 @@ const PasswordForm = () => {
       },
     } as IPassword;
 
-    await createPassword(passwordObj);
-
+   const res =  await createPassword(passwordObj);
+    console.log(res);
     if (createError) {
       console.log(createError.message);
       return;
