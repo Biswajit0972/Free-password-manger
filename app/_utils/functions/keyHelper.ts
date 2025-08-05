@@ -31,7 +31,7 @@ export const genBaseKey = async (masterPassword: string): Promise<CryptoKey> => 
     const enc = new TextEncoder();
     const stringToArray = enc.encode(masterPassword);
     // ! encode convert string to Uint8Array
-    return await window.crypto.subtle.importKey("raw", stringToArray, "PBKDF2", true, ["deriveKey"]);
+    return await window.crypto.subtle.importKey("raw", stringToArray, "PBKDF2", false, ["deriveKey"]);
 }
 
 export const genDerivedKey = async (baseKey: CryptoKey, salt: Uint8Array<ArrayBuffer>): Promise<CryptoKey> => {
