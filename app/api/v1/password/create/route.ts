@@ -1,7 +1,9 @@
 import { databaseConnection } from "@/app/_lib/db/database";
 import { PasswordModel } from "@/app/_lib/models/password/password.model";
+import { UserModel } from "@/app/_lib/models/user/user.model";
 import { ApiResponse, ErrorResponse } from "@/app/_utils/functions/Apiresponse";
 import { AsyncHandler } from "@/app/_utils/functions/helper";
+
 import { NextRequest, NextResponse } from "next/server";
 
 async function createPassword(req: NextRequest) {
@@ -12,10 +14,15 @@ async function createPassword(req: NextRequest) {
         throw new ErrorResponse(400, "All fields are required");
     }
 
+    const isUserExists = await UserModel.findOne({ _id: user_id })
     
+    if (!isUserExists) {
+        throw new ErrorResponse(404, "User not found");
+    }
+   
 
     const newPassword = await PasswordModel.create({
-        user_id,
+        user_id: isUserExists._id,
         username,
         password_obj,
         application_link,

@@ -21,11 +21,11 @@ async function getAllPasswords(req: NextRequest) {
         throw new ErrorResponse(404, "User not found");
     }
 
-
+    // console.log(user);
     const passwords = await PasswordModel.aggregate([
         {
             $match: {
-                user_id: "688dc53c2a04dff5a444538a"
+                user_id: user._id,
             }
         },
         {

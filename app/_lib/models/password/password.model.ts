@@ -5,14 +5,14 @@ export type Password = {
     iv: string;
 }
 export interface IPassword extends Document {
-    user_id: string;
+    user_id: mongoose.Types.ObjectId;
     username: string;
     password_obj: Password;
     application_link: string;
 }
 
 const PasswordSchema: Schema<IPassword> = new Schema({
-    user_id: { type: String, ref: 'User', required: true },
+    user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     username: { type: String, required: true },
     password_obj: {
         password: { type: String, required: true },

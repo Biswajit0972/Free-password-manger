@@ -10,7 +10,6 @@ import { useAuth } from "@clerk/nextjs";
 import { decryptSessionKey } from "../_utils/functions/keyGen";
 import { useCryptoContext } from "../_context/CryptoProvider";
 import { encryptData } from "../_utils/functions/keyHelper";
-import { IPassword } from "../_lib/models/password/password.model";
 import { toast } from "react-toastify";
 
 const PasswordForm = () => {
@@ -28,7 +27,7 @@ const PasswordForm = () => {
     defaultValues: {
       applicationLink: "",
       username: "",
-      password: password.length > 0 ? password : "",
+      password: password.length > 0 ? password : "123456",
     },
   });
 
@@ -39,6 +38,7 @@ const PasswordForm = () => {
     error: createError,
     isPending,
   } = useCreatePassword();
+
   const { derivedKey } = useCryptoContext();
   if (error) {
     console.error("Error fetching user data:", error);
@@ -79,9 +79,9 @@ const PasswordForm = () => {
         password: cipherText,
         iv: enDataIv,
       },
-    } as IPassword;
+    };
 
-   const res =  await createPassword(passwordObj);
+    const res = await createPassword(passwordObj);
     console.log(res);
     if (createError) {
       console.log(createError.message);
