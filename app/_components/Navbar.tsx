@@ -2,7 +2,6 @@
 
 import React from "react";
 import Logo from "./Logo";
-import MobileMenu from "./MobileMenu";
 import { UserButton, useUser } from "@clerk/nextjs";
 import Navigation from "./Navigation";
 import { authNavItems, navItems } from "../_utils";
@@ -16,11 +15,12 @@ const Navbar = () => {
   const { isLoaded, isSignedIn } = useUser();
 
   return (
-    <div className="w-full h-18 bg-gray-500  px-5 py-2 relative flex-between">
+    <div className="w-full h-18 bg-gray-500  px-2 py-2 relative flex-between">
       <Logo />
       {/* !  Navigation Items */}
-      <div className="hidden h-full md:max-w-[58%]  relative md:flex overflow-hidden">
-        <div className="h-full  w-full  relative flex-between gap-3">
+      
+      <div className=" h-full md:max-w-[60%] lg:max-w-[70%]  relative md:flex overflow-hidden">
+        <div className="h-full  w-full  relative flex-between  gap-5">
           {isLoaded && isSignedIn ? (
             <Navigation
               data={navItems}
@@ -36,7 +36,7 @@ const Navbar = () => {
                   >
                     <item.icon
                       size={20}
-                      className={`  flex-center gap-2 group ${
+                      className={` hidden  md:flex md:items-center   gap-2 group ${
                         pathname === item.href ? "text-green-500 font-bold" : ""
                       } group-hover:text-green-400 transition-all duration-300`}
                     />
@@ -75,12 +75,12 @@ const Navbar = () => {
             />
           )}
           {isLoaded && isSignedIn && (
-            <div className="h-10 w-10 bg-green-500 rounded-full flex-center ">
+            <div className="h-8 w-8 bg-green-500 rounded-full flex-center ">
               <UserButton
                 appearance={{
                   elements: {
-                    userButtonAvatarBox: "w-10 h-10",
-                    userButtonAvatarImage: "w-10 h-10 rounded-full",
+                    userButtonAvatarBox: "w-8 h-8",
+                    userButtonAvatarImage: "w-8 h-8 rounded-full",
                     userButtonAction: "hidden",
                   },
                 }}
@@ -90,10 +90,11 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* !  Mobile Menu */}
+      {/* !  Mobile Menu
       <div className="h-full relative md:hidden">
         <MobileMenu />
-      </div>
+      </div> */}
+      
     </div>
   );
 };

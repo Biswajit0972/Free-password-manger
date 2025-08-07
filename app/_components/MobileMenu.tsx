@@ -25,7 +25,10 @@ const MobileMenu = () => {
             onClick={() => setIsOpen(true)}
           />
         )}
+
+        
       </div>
+      
     </div>
   );
 };

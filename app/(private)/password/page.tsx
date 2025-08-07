@@ -36,9 +36,9 @@ const Password = () => {
   }
   
   return (
-    <div className="w-full h-full relative px-5 py-1 overflow-hidden flex-column">
-      <div className="w-full h-full relative ">
-        <h1 className="secondary-font text-center font-bold ">
+    <div className="w-full h-full relative px-5  overflow-hidden flex-column md:flex  md:items-center md:justify-center bg-gray-700 overflow-y-auto">
+      <div className="w-full h-full relative md:w-1/2 ">
+        <h1 className="primary-font text-center font-bold py-3 text-gray-200">
           Password Store
         </h1>
         <div className="w-full h-[calc(100%-2rem)]   bg-gray-200 p-1 rounded-lg relative">
@@ -47,7 +47,7 @@ const Password = () => {
           ) : passwords && passwords.length > 0 ? (
             <CustomUl
               data={passwords}
-              className="w-full h-full overflow-y-auto "
+              className="w-full h-full overflow-y-auto hide-scrollbar"
               render={(password) => (
                 <Dropdown key={password.sitename} data={password} />
               )}

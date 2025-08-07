@@ -8,7 +8,7 @@ const Navigation = <T,>({
   render: (data: T) => React.ReactNode;
 }) => {
   return (
-    <nav className="h-full hidden md:flex items-center gap-5">
+    <nav className="h-full w-full flex items-center gap-4 ">
       {data && data.map(render)}
     </nav>
   );
