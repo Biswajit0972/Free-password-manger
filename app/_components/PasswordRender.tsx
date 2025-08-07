@@ -52,26 +52,6 @@ const PasswordRender = ({
 
   const testing = async () => {
     try {
-      // const user: EncryptionResponse = await mutateAsync(userId!.split("_")[1]);
-
-      // if (!user.data._id) {
-      //   console.error("User ID not found in response data");
-      //   return;
-      // }
-
-      // const enIv = user.data.EnIvKey;
-      // const dataEnkey = await decryptSessionKey(derivedKey!, enIv);
-      // if (!dataEnkey) {
-      //   console.error("Failed to decrypt session key");
-      //   return;
-      // }
-
-      // const decryptedPassword = await decryptData(
-      //   Password,
-      //   dataEnkey,
-      //   user.data.EnIvData
-      // );
-
       const decryptedPassword = await decryptHelper();
 
       if (!decryptedPassword) {
@@ -99,6 +79,7 @@ const PasswordRender = ({
       toast.error(err.message || "falied to copied password, please try again");
     }
   };
+
   return (
     <div className="w-full  p-2 bg-gray-100 rounded-md shadow-sm mb-1 max-h-28">
       <div className="text-sm font-medium text-gray-700 border-b border-gray-300 py-1 h-8 flex items-center gap-3">
@@ -106,14 +87,17 @@ const PasswordRender = ({
         <h3 className="font-semibold text-sm text-gray-800">{Username}</h3>
       </div>
       <div className="text-sm font-medium text-gray-700 border-b border-gray-300 py-1  flex-between">
-        <span className="text-[14px] font-bold"> Password:</span>{" "}
-        <input
-          type={passwordToggler ? "text" : "password"}
-          value={password}
-          readOnly
-          className="bg-gray-300  h-8 max-w-[55%] rounded-md px-2"
-        />
-        <div className="w-[15%] flex-between  text-lg">
+        <div className="h-full w-[75%]  flex-between overflow-hidden">
+          <span className="text-[14px] font-bold"> Password:</span>{" "}
+          <input
+            type={passwordToggler ? "text" : "password"}
+            value={password}
+            readOnly
+            className="bg-gray-300  h-8 max-w-[70%] rounded-md px-2 border-none outline-none text-gray-800 text-[17px]"
+          />
+        </div>
+
+        <div className="w-[20%] flex-between  text-lg">
           <button
             onClick={() => {
               testing();
