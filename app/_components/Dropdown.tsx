@@ -12,7 +12,7 @@ const Dropdown = ({ data }: { data: SiteData }) => {
   const siteImage = data.sitename.split("/");
 
   return (
-    <div className="relative w-full max-h-80 flex-column gap-2 overflow-hidden mb-2">
+    <div className="relative w-full  flex-column gap-2 overflow-hidden mb-2">
       <div
         className="header w-full h-12 rounded-lg bg-gray-400 flex-between px-1"
         onClick={() => setIsDropDownOpen(!isDropDownOpen)}
@@ -44,7 +44,7 @@ const Dropdown = ({ data }: { data: SiteData }) => {
       {isDropDownOpen && (
         <div
           className={`w-full bg-gray-500 rounded-md 
-           max-h-80 overflow-hidden`}
+           max-h-80 overflow-y-auto`}
         >
           <CustomUl
             data={data.accounts}
