@@ -44,7 +44,7 @@ const Dropdown = ({ data }: { data: SiteData }) => {
       {isDropDownOpen && (
         <div
           className={`w-full bg-gray-500 rounded-md 
-           max-h-80 overflow-y-auto`}
+           max-h-80 overflow-y-auto hide-scrollbar`}
         >
           <CustomUl
             data={data.accounts}
