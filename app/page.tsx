@@ -14,7 +14,7 @@ const Page = () => {
             <h2 className="text-xl font-semibold font-sans sm:text-3xl">
               Try our free password generator and manager.
             </h2>
-            <p className="secondary-font text-sm sm:text-xl">
+            <p className="secondary-font text-gray-200">
               A powerful generator for powerful passwords to protect your online
               accounts. No more reusing weak passwords.
             </p>
