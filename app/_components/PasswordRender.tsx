@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { decryptData } from "../_utils/functions/keyHelper";
 import { useCryptoContext } from "../_context/CryptoProvider";
 import { decryptSessionKey } from "../_utils/functions/keyGen";
@@ -18,6 +18,8 @@ const PasswordRender = ({
 }) => {
   const [passwordToggler, setpasswordToggler] = useState<boolean>(false);
   const [password, setPassword] = useState<string>(Password);
+  const [isPasswordDecrypted, setIsPasswordDecrypted] =
+    useState<boolean>(false);
   const { derivedKey } = useCryptoContext();
   const { userId } = useAuth();
   const { error, mutateAsync } = useGetUserData();
@@ -25,6 +27,18 @@ const PasswordRender = ({
   if (error) {
     console.error("Error fetching user data:", error);
   }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isPasswordDecrypted) {
+        setPassword(Password);
+        setIsPasswordDecrypted(false);
+        setpasswordToggler(false);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [isPasswordDecrypted, Password]);
 
   const decryptHelper = async (): Promise<string | void> => {
     const user: EncryptionResponse = await mutateAsync(userId!.split("_")[1]);
@@ -52,12 +66,16 @@ const PasswordRender = ({
 
   const testing = async () => {
     try {
-      const decryptedPassword = await decryptHelper();
+      if (!isPasswordDecrypted) {
+        const decryptedPassword = await decryptHelper();
 
-      if (!decryptedPassword) {
-        throw new Error("something wents wrong");
+        if (!decryptedPassword) {
+          throw new Error("something wents wrong");
+        }
+        setPassword(decryptedPassword);
+        setIsPasswordDecrypted(true);
       }
-      setPassword(decryptedPassword);
+
       setpasswordToggler(!passwordToggler);
     } catch (error) {
       console.error("Error during password decryption:", error);
