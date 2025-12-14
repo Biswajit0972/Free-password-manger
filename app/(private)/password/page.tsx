@@ -34,8 +34,8 @@ const Password = () => {
   if (error) {
     toast.error("Failed to fetch passwords. Please try again later.");
   }
-  
-  return (
+
+    return (
     <div className="w-full h-full relative px-5  overflow-hidden flex-column md:flex  md:items-center md:justify-center bg-gray-700 overflow-y-auto">
       <div className="w-full h-full relative md:w-1/2 ">
         <h1 className="primary-font text-center font-bold py-3 text-gray-200">

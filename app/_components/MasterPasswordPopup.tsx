@@ -28,7 +28,7 @@ export const MasterPasswordPopup = () => {
 
     const user: EncryptionResponse = await mutateAsync(userId!.split("_")[1]);
 
-    if (!user.data._id) {
+      if (!user.data._id) {
       console.error("User ID not found in response data");
       return;
     }

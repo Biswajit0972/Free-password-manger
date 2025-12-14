@@ -100,9 +100,24 @@ const PasswordRender = ({
 
   return (
     <div className="w-full  p-2 bg-gray-100 rounded-md shadow-sm mb-1 max-h-28">
-      <div className="text-sm font-medium text-gray-700 border-b border-gray-300 py-1 h-8 flex items-center gap-3">
+      <div className="text-sm font-medium text-gray-700 border-b border-gray-300  h-10 flex items-center gap-3">
         <span className="font-bold text-[14px]">Username:</span>{" "}
         <h3 className="font-semibold text-sm text-gray-800">{Username}</h3>
+          <div className="w-full h-full flex items-center justify-end ">
+              <div className="h-full  flex items-center gap-3 pb-1">
+                  <button
+                      className=" rounded-md cursor-pointer h-full w-12 text-lg bg-blue-500"
+                      onClick={() => clipBoardHelper()}
+                  >
+                      🔏
+                  </button> <button
+                  className=" rounded-md cursor-pointer h-full w-12 text-lg bg-red-500"
+                  onClick={() => clipBoardHelper()}
+              >
+                  🗑️
+              </button>
+              </div>
+          </div>
       </div>
       <div className="text-sm font-medium text-gray-700 border-b border-gray-300 py-1  flex-between">
         <div className="h-full w-[75%]  flex-between overflow-hidden">
