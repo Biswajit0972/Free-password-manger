@@ -1,5 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+import { NextResponse} from 'next/server';
 
 const isPublicRoute = createRouteMatcher(["/sign-in", "/sign-up"]);
 const isPrivateRoute = createRouteMatcher(["/password", "/settings", "/api"]);
@@ -20,8 +20,6 @@ export default clerkMiddleware(async (auth, req) => {
     console.log("not allowing authenticated user to access private route");
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
-
-
 }
 );
 
