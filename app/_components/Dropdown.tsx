@@ -54,6 +54,7 @@ const Dropdown = ({ data }: { data: SiteData }) => {
                 Username={user.username}
                 Password={user.password}
                 key={index}
+                password_id={user.password_id}
               />
             )}
           />
