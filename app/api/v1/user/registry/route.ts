@@ -9,6 +9,7 @@ import { UserModel } from "@/app/_lib/models/user/user.model";
 export async function POST(request: Request) {
     await databaseConnection();
     const weebhookSecret = process.env.CLERK_WEB_HOOK_SECRET_KEY_USER;
+
     if (!weebhookSecret) {
         throw new Error("Webhook secret is not defined");
     }
@@ -36,8 +37,7 @@ export async function POST(request: Request) {
         }) as WebhookEvent;
 
         if (evt.type === "user.created") {
-            // ! lets fix it 
-            console.log(evt.data);
+            // ! lets fix it
 
             const updatedId = evt.data.id.split("_")[1];
 
