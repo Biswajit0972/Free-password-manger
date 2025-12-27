@@ -56,7 +56,7 @@ const Password = () => {
                             )}
                         />
                     ) : (
-                        "No passwords found"
+                       <p className="text-center text-xl text-red-500">  No passwords found</p>
                     )}
                     {state.openForm && <PasswordForm/>}
                 </div>
