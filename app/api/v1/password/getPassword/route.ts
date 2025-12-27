@@ -56,7 +56,7 @@ async function getAllPasswords(req: NextRequest) {
     ]);
 
     if (!passwords || passwords.length === 0) {
-        throw new ErrorResponse(404, "No passwords found for this user");
+        throw new ErrorResponse(200, "No passwords found for this user");
     }
 
     return NextResponse.json(new ApiResponse(200, "Passwords retrieved successfully", "success", passwords), { status: 200 });
