@@ -22,10 +22,6 @@ const UserSchema: Schema<IUser> = new Schema({
     imageUrl: { type: String },
     lastSignInAt: { type: Date },
     createdAt: { type: Date },
-    saltDataKey: { type: String, required: true }, // Key for data encryption
-    saltEnKey: { type: String, required: true }, // for key encryption
-    EnIvKey: { type: String, required: true }, // iv for encryption key
-    EnIvData: { type: String, required: true },// iv for data  encryption
 }, {
     timestamps: true
 });
