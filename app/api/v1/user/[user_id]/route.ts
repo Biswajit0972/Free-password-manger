@@ -18,9 +18,7 @@ async function getUser(req: NextRequest, ctx: RouteContext<"/api/v1/user/[user_i
         throw new ErrorResponse(404, 'User not found');
     }
 
-    console.log(user)
-
-    return NextResponse.json(new ApiResponse(200, ``, 'success', ""), { status: 200 });
+    return NextResponse.json(new ApiResponse(200, ``, 'success', user), { status: 200 });
 }
 
 export const GET = AsyncHandler(getUser);
