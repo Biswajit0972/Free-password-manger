@@ -17,6 +17,7 @@ const PasswordSchema: Schema<IPassword> = new Schema({
     vaultId: {
         type: mongoose.Types.ObjectId,
         required: true,
+        ref: "Vault",
     },
     username: {type: String, required: true},
     password_obj: {
