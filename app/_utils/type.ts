@@ -108,4 +108,5 @@ export interface IVault extends Document {
   salt: string;
   wrapIv: string
   version: string;
+  vaultName: string;
 }

@@ -21,6 +21,10 @@ const vaultSchema = new Schema<IVault>({
     },
     version: {
         type: String,
+    },
+    vaultName: {
+        type: String,
+        required: true,
     }
 }, {timestamps: true});
 
