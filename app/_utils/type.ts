@@ -1,4 +1,4 @@
-import {Document} from 'mongoose'
+import {Document, Types} from 'mongoose'
 
 import { House } from "@deemlol/next-icons";
 import { AppWindowMac } from "@deemlol/next-icons";
@@ -103,7 +103,7 @@ export type EncryptionResponse = {
 };
 
 export interface IVault extends Document {
-  userId: string;
+  userId: Types.ObjectId;
   wrappedVaultKey: string;
   salt: string;
   wrapIv: string
