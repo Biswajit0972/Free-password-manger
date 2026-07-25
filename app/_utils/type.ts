@@ -1,3 +1,5 @@
+import {Document} from 'mongoose'
+
 import { House } from "@deemlol/next-icons";
 import { AppWindowMac } from "@deemlol/next-icons";
 import { LogIn } from "@deemlol/next-icons";
@@ -99,3 +101,11 @@ export type EncryptionResponse = {
   };
   status: string;
 };
+
+export interface IVault extends Document {
+  userId: string;
+  wrappedVaultKey: string;
+  salt: string;
+  wrapIv: string
+  version: string;
+}
