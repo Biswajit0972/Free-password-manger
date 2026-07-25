@@ -6,7 +6,7 @@ import {MasterPasswordPopup} from "@/app/_components/MasterPasswordPopup";
 import PasswordForm from "@/app/_components/PasswordForm";
 import {useApplicationcontext} from "@/app/_context/Context";
 import {useCryptoContext} from "@/app/_context/CryptoProvider";
-import {SiteData} from "@/app/_utils";
+import {SiteData} from "@/app/_utils/type";
 import {fetchPasswords} from "@/app/_utils/functions/fetch";
 import {useAuth} from "@clerk/nextjs";
 import {FolderPlus} from "@deemlol/next-icons";

@@ -4,7 +4,7 @@ import { cryptoKeyGen } from "../_utils/functions/keyGen";
 import { useCryptoContext } from "../_context/CryptoProvider";
 import { useGetUserData } from "../_utils/hooks";
 import { useAuth } from "@clerk/nextjs";
-import { EncryptionResponse } from "../_utils";
+import { EncryptionResponse } from "../_utils/type";
 import { toast } from "react-toastify";
 
 

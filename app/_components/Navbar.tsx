@@ -4,7 +4,7 @@ import React from "react";
 import Logo from "./Logo";
 import { UserButton, useUser } from "@clerk/nextjs";
 import Navigation from "./Navigation";
-import { authNavItems, navItems } from "../_utils";
+import { authNavItems, navItems } from "../_utils/type";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

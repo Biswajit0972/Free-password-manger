@@ -5,7 +5,7 @@ import {decryptData} from "../_utils/functions/keyHelper";
 import {useCryptoContext} from "../_context/CryptoProvider";
 import {decryptSessionKey} from "../_utils/functions/keyGen";
 import {useAuth} from "@clerk/nextjs";
-import {EncryptionResponse} from "../_utils";
+import {EncryptionResponse} from "../_utils/type";
 import {useDeletePassword, useGetUserData} from "../_utils/hooks";
 import {toast} from "react-toastify";
 

@@ -3,7 +3,7 @@ import Image from "next/image";
 import demoImg from "@/public/download (2).gif";
 import Input from "./Input";
 import { useForm } from "react-hook-form";
-import { EncryptionResponse, passwordForm } from "../_utils";
+import { EncryptionResponse, passwordForm } from "../_utils/type";
 import { useApplicationcontext } from "../_context/Context";
 import { useCreatePassword, useGetUserData } from "../_utils/hooks";
 import { useAuth } from "@clerk/nextjs";

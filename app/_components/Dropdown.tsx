@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "@deemlol/next-icons";
-import { SiteData } from "../_utils";
+import { SiteData } from "../_utils/type";
 import PasswordRender from "./PasswordRender";
 import CustomUl from "./CustomUl";
 
