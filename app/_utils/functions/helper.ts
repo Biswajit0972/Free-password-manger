@@ -1,16 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { ErrorResponse } from './Apiresponse';
+import {NextResponse} from "next/server";
+import {ErrorResponse} from "@/app/_utils/functions/Apiresponse";
+import {databaseConnection} from "@/app/_lib/db/database";
 
-type AsyncHandlerFunction = (req: NextRequest) => Promise<NextResponse>;
-
-export const AsyncHandler = (fn: AsyncHandlerFunction) => {
-    return async (req: NextRequest): Promise<NextResponse> => {
+export const AsyncHandler = <
+    T extends (...args: any[]) => Promise<NextResponse>
+>(fn: T) => {
+    return async (...args: Parameters<T>) => {
         try {
-            return await fn(req);
-        } catch (error) {
-            const err = error as ErrorResponse;
-            console.error('AsyncHandler caught error:', err.message);
-            return NextResponse.json({ error: err.message }, { status: err.statusCode || 500 });
+            await databaseConnection();
+            return await fn(...args);
+        } catch (err) {
+
+            if (err instanceof ErrorResponse) {
+                return NextResponse.json({error: err.message}, {status: err.statusCode});
+            }
+
+            const er = err as Error;
+            return NextResponse.json({error: er.message}, {status: 500});
         }
-    };
-};
+    }
+}
