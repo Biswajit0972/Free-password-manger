@@ -26,5 +26,6 @@ const UserSchema: Schema<IUser> = new Schema({
     timestamps: true
 });
 
+UserSchema.index({clerkId: 1, _id: 1});
 
 export const UserModel: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
