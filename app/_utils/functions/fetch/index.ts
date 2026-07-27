@@ -1,5 +1,6 @@
 import axios from "axios";
 import {Password} from "@/app/_lib/models/password/password.model";
+import {Encryption} from "@/app/_utils/type";
 
 export type CreateVaultPayload = {
     user_id: string;
@@ -20,14 +21,8 @@ export const fetchUserData = async (user_id: string) => {
     }
 }
 
-export const createPassword = async (user_id: string, username: string, password_obj: Password, application_link: string, vault_id:string) => {
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/password/create`, {
-        vault_id,
-        user_id,
-        username,
-        password_obj,
-        application_link
-    });
+export const createPassword = async (data:Encryption) => {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/password/create`, data);
     return response.data?.data;
 }
 
@@ -65,3 +60,9 @@ export const createVault = async (data: CreateVaultPayload) => {
        console.error("Error creating vault:", err.message);
    }
 };
+
+
+export const fetchVaultById = async (vaultId:string, authUserId:string) => {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/vault/getById?vault_id=${vaultId}&user_id=${authUserId}`);
+    return response.data.data
+}
