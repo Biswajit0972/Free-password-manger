@@ -14,6 +14,7 @@ import {
     generateIv,
     generateSalt
 } from "@/app/_utils/functions/keyHelper";
+import {useApplicationcontext} from "@/app/_context/Context";
 
 const VaultSelector = () => {
     const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
@@ -22,10 +23,17 @@ const VaultSelector = () => {
     const [vault, setVault] = useState<string>("");
 
     const userId = "user_30x0kyf3rMPcE8z2aPzuAcZN5v0";
-
     const {data: authUser} = useFetch("fetchUser", () => fetchUserData(userId!.split("_")[1]));
     const {isLoading: loadVaults, data: vaults} = useFetch<IVault[]>("fetchVaults", () => fetchVaults(authUser._id));
     const {error, isError, isPending, mutateAsync} = useCreateVault();
+    const {dispatch} = useApplicationcontext();
+
+    useEffect(() => {
+        if (isError) {
+            toast.error("Error creating vault");
+            console.log(error.message)
+        }
+    }, [error, isError]);
 
     const handleCreateVault = async (event: SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -54,13 +62,6 @@ const VaultSelector = () => {
         });
     };
 
-    useEffect(() => {
-        if (isError) {
-            toast.error("Error creating vault");
-            console.log(error.message)
-        }
-    }, [error, isError]);
-
     return (
         <div
             className="rounded-2xl border border-white/10 bg-[#101621]/80 p-2.5 shadow-lg shadow-black/15 backdrop-blur-xl">
@@ -72,12 +73,18 @@ const VaultSelector = () => {
                     className="mb-0.5 block text-xs font-semibold uppercase tracking-[.12em] text-slate-500">Current vault</span>
                     <select
                         aria-label="Current vault" value={vault}
-                        onChange={(event) => setVault(event.target.value)}
+                        onChange={(event) => {
+                            setVault(event.target.value);
+                            dispatch({type: "CHOOSE_VAULT", payload: event.target.value});
+                        }}
                         className="w-full cursor-pointer appearance-none bg-transparent pr-5 text-sm font-semibold text-slate-100 outline-none">
-                        <option className="bg-[#101621]" value="">Select a vault</option>
+                        {
+                            !loadVaults && ( !vaults || vaults.length === 0) && <option>create vault</option>
+                        }
+
                         {
                             !loadVaults && vaults!.map((vault) =>
-                                <option className="bg-[#101621]" value={vault.vaultName}
+                                <option className="bg-[#101621]" value={`${vault._id}`}
                                         key={String(vault._id) ?? vault.vaultName}>
                                     {vault.vaultName}
                                 </option>)
