@@ -1,6 +1,6 @@
 "use client";
 
-import {FormEvent, SubmitEventHandler, SyntheticEvent, useEffect, useState} from "react";
+import {SyntheticEvent, useEffect, useState} from "react";
 import {useAuth} from "@clerk/nextjs";
 import {useCreateVault, useFetch} from "@/app/_utils/hooks";
 import {fetchUserData, fetchVaults} from "@/app/_utils/functions/fetch";
