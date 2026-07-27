@@ -85,21 +85,17 @@ export type passwordForm  = {
   applicationLink: string;
   username: string;
   password: string;
+  masterPassword: string
 }
 
 export type EncryptionResponse = {
-  statusCode: number;
-  message: string;
-  data: {
-    _id: string;
-    saltDataKey: string;
-    saltEnKey: string;
-    EnIvKey: string;
-    EnIvData: string;
-    updatedAt: string;
-    __v: number;
-  };
-  status: string;
+  _id: string;
+  saltDataKey: string;
+  saltEnKey: string;
+  EnIvKey: string;
+  EnIvData: string;
+  updatedAt: string;
+  __v: number;
 };
 
 export interface IVault extends Document {
