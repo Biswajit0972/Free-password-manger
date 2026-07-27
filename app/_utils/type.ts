@@ -4,6 +4,7 @@ import { House } from "@deemlol/next-icons";
 import { AppWindowMac } from "@deemlol/next-icons";
 import { LogIn } from "@deemlol/next-icons";
 import { FileText, Settings } from "@deemlol/next-icons";
+import {Password} from "@/app/_lib/models/password/password.model";
 
 type navItem = {
   title: string;
@@ -105,4 +106,12 @@ export interface IVault extends Document {
   wrapIv: string
   version: string;
   vaultName: string;
+}
+
+export type Encryption ={
+  vaultId: string;
+  user_id: string;
+  username: string;
+  password_obj: Password;
+  application_link: string;
 }
