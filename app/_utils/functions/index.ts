@@ -1,88 +1,78 @@
-export type passwordStrength = "Very Weak" | "Weak" | "Medium" | "Fair" | "Good" | "Very Strong" | "Excellent 💪" | "Undetermined" | "Very Weak (Too short)" | "";
+export type passwordStrength =
+  | "Undetermined"
+  | "Very Weak"
+  | "Weak"
+  | "Fair"
+  | "Good"
+  | "Strong"
+  | "Very Strong"
+  | "Excellent";
 
-export const passwordStrengthCheckHelper = (password: string): string | passwordStrength=> {
+const COMMON_PASSWORD_PATTERNS = ["password", "qwerty", "letmein", "welcome", "admin", "login", "iloveyou", "abc", "123", "football", "monkey", "dragon"];
+const SEQUENTIAL_PATTERN = /(?:012|123|234|345|456|567|678|789|890|abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|qwerty)/i;
+
+/**
+ * Estimates password quality entirely on-device. It never logs, stores, or
+ * transmits the password. This is a UX indicator, not breach-password detection.
+ */
+export const passwordStrengthCheckHelper = (password: string): passwordStrength => {
+  if (!password) return "Undetermined";
+
+  const normalized = password.toLowerCase();
   const length = password.length;
+  const characterClasses = [/[a-z]/.test(password), /[A-Z]/.test(password), /\d/.test(password), /[^A-Za-z0-9\s]/.test(password)].filter(Boolean).length;
+  const uniqueCharacters = new Set(password).size;
   let score = 0;
 
-  const hasLower = /[a-z]/.test(password);
-  const hasUpper = /[A-Z]/.test(password);
-  const hasNumber = /\d/.test(password);
-  const hasSymbol = /[!@#$%^&*(),.?":{}|<>+\-=/\\[\]_`~;]/.test(password);
-  const hasMiddleChar = /(?=\S*[\d!@#$%^&*(),.?":{}|<>+\-=/\\[\]_`~;])/.test(password.slice(1, -1));
-  const onlyLetters = /^[a-zA-Z]+$/.test(password);
-  const onlyNumbers = /^\d+$/.test(password);
-  
-  // Length
+  // Up to 40 points for length, 50 for complexity, then pattern penalties.
   if (length >= 8) score += 10;
   if (length >= 12) score += 10;
   if (length >= 16) score += 10;
+  if (length >= 20) score += 10;
+  score += characterClasses * 10;
+  if (uniqueCharacters >= Math.min(10, length)) score += 10;
+  if (characterClasses === 4 && length >= 12) score += 10;
 
-  // Character Variety
-  if (hasLower) score += 10;
-  if (hasUpper) score += 10;
-  if (hasNumber) score += 10;
-  if (hasSymbol) score += 15;
-  if (hasMiddleChar) score += 5;
+  const repeatedCharacter = /(.)\1{2,}/.test(password);
+  const repeatedBlock = /^(.{1,4})\1+$/.test(password);
+  const commonPattern = COMMON_PASSWORD_PATTERNS.some((pattern) => normalized.includes(pattern));
+  const sequential = SEQUENTIAL_PATTERN.test(normalized) || SEQUENTIAL_PATTERN.test([...normalized].reverse().join(""));
 
-  // Bonus for combo
-  if (hasLower && hasUpper && hasNumber && hasSymbol) score += 10;
+  if (length < 8) score -= 35;
+  if (characterClasses === 1) score -= 20;
+  if (repeatedCharacter) score -= 20;
+  if (repeatedBlock) score -= 25;
+  if (commonPattern) score -= 30;
+  if (sequential) score -= 15;
+  if (/\s/.test(password)) score -= 5;
 
-  // Penalties
-  if (onlyLetters || onlyNumbers) score -= 10;
-  if (length < 6) score -= 15;
-
-  // Clamp score between 0 and 100
-  score = Math.max(0, Math.min(score, 100));
-
+  score = Math.max(0, Math.min(100, score));
   if (score >= 90) return "Excellent";
-  if (score >= 80 && score < 90) return "Very Strong";
-  if (score >= 70 && score < 80) return "Strong";
-  if (score >= 60 && score < 70) return "Good";
-  if (score >= 50 && score < 60) return "Fair";
-  if (score >= 30) return "Weak";
+  if (score >= 75) return "Very Strong";
+  if (score >= 60) return "Strong";
+  if (score >= 45) return "Good";
+  if (score >= 30) return "Fair";
+  if (score >= 15) return "Weak";
   return "Very Weak";
 };
 
-export const passwordGenerator = (
-  length: number,
-  hasNumbers?: boolean,
-  hasSymbols?: boolean
-): string => {
+export const passwordGenerator = (length: number, hasNumbers?: boolean, hasSymbols?: boolean): string => {
   const upperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const lowerCaseChars = upperCaseChars.toLowerCase();
   const numberChars = "0123456789";
   const symbolChars = "!@#$%^&*(),.?\":{}|<>+-=/\\[\\]_`~;";
+  const safeLength = Math.max(8, Math.min(128, Math.floor(length)));
+  const passwordMaterial = upperCaseChars + lowerCaseChars + (hasNumbers ? numberChars : "") + (hasSymbols ? symbolChars : "");
 
-  let passwordMaterial = upperCaseChars + lowerCaseChars;
-  if (hasNumbers) passwordMaterial += numberChars;
-  if (hasSymbols) passwordMaterial += symbolChars;
-  if (hasSymbols && hasNumbers) passwordMaterial += symbolChars + numberChars;
-
-  
-  const generate = (): string => {
-    let password = "";
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * passwordMaterial.length);
-      password += passwordMaterial.charAt(randomIndex);
-    }
-    return password;
+  const randomCharacter = () => {
+    const value = new Uint32Array(1);
+    crypto.getRandomValues(value);
+    return passwordMaterial.charAt(value[0] % passwordMaterial.length);
   };
+  const generate = () => Array.from({ length: safeLength }, randomCharacter).join("");
+  const isValid = (value: string) => /[A-Z]/.test(value) && /[a-z]/.test(value) && (!hasNumbers || /\d/.test(value)) && (!hasSymbols || /[^A-Za-z0-9\s]/.test(value));
 
-  // Helper to validate generated password
-  const isValid = (password: string): boolean => {
-    const hasUpper = /[A-Z]/.test(password);
-    const hasLower = /[a-z]/.test(password);
-    const hasNum = hasNumbers ? /\d/.test(password) : true;
-    const hasSym = hasSymbols ? /[!@#$%^&*(),.?":{}|<>+\-=/\\[\]_`~;]/.test(password) : true;
-
-    return hasUpper && hasLower && hasNum && hasSym;
-  };
-
-  // Generate until valid
-  let generatedPassword = generate();
-  while (!isValid(generatedPassword)) {
-    generatedPassword = generate();
-    console.log("Generated Password:", generatedPassword, "valid:", isValid(generatedPassword));
-  }
-  return generatedPassword;
+  let generated = generate();
+  while (!isValid(generated)) generated = generate();
+  return generated;
 };
