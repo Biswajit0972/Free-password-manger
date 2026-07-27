@@ -1,19 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import {createPassword, deletePassword, fetchUserData} from "../functions/fetch";
+import {createPassword, createVault, CreateVaultPayload, deletePassword, fetchUserData} from "../functions/fetch";
 import {  Password } from "@/app/_lib/models/password/password.model";
 import { queryClient } from "@/app/query/Provider";
+import {Encryption} from "@/app/_utils/type";
 
-type Encryption ={
-    user_id: string;
-        username: string;
-        password_obj: Password;
-        application_link: string;
-}
 
 export const useFetch = <T,>(queryKey: string, queryFn: () => Promise<T>) => {
-    const { data, error, isLoading } = useQuery<T>({
+    const { data, error, isLoading,  isError} = useQuery<T>({
         queryKey: [queryKey],
         queryFn
     });
@@ -24,7 +19,7 @@ export const useFetch = <T,>(queryKey: string, queryFn: () => Promise<T>) => {
         }
     }, [error]);
 
-    return { data, isLoading }
+    return { data, isLoading, error,   isError };
 }
 
 export const useGetUserData = () => {
@@ -37,7 +32,7 @@ export const useGetUserData = () => {
 export const useCreatePassword = () => {
     return useMutation({
         mutationKey: ["createPassword"],
-        mutationFn: (data: Encryption) => createPassword(data.user_id, data.username, data.password_obj, data.application_link),
+        mutationFn: (data: Encryption) => createPassword(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["passwords"] });
         }
@@ -53,3 +48,13 @@ export const useDeletePassword = () => {
         }
     });
 }
+
+export const useCreateVault = () => {
+    return useMutation({
+        mutationKey: ["createVault"],
+        mutationFn: (data: CreateVaultPayload) => createVault(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["fetchVaults"] });
+        },
+    });
+};
