@@ -3,12 +3,10 @@ import Image from "next/image";
 import demoImg from "@/public/download (2).gif";
 import Input from "./Input";
 import {useForm} from "react-hook-form";
-import {Encryption, EncryptionResponse, IVault, passwordForm} from "../_utils/type";
+import {Encryption, IVault, passwordForm} from "../_utils/type";
 import {useApplicationcontext} from "../_context/Context";
-import {useCreatePassword, useFetch, useGetUserData} from "../_utils/hooks";
+import {useCreatePassword, useFetch} from "../_utils/hooks";
 import {useAuth} from "@clerk/nextjs";
-import {decryptSessionKey} from "../_utils/functions/keyGen";
-import {useCryptoContext} from "../_context/CryptoProvider";
 import {
     arrayBufferToBase64,
     base64ToArrayBuffer,
@@ -26,18 +24,15 @@ const PasswordForm = () => {
         state: {password, vaultId},
         dispatch,
     } = useApplicationcontext();
-    console.log(vaultId)
 
-
-    // const { userId } = useAuth();
-
-    const userId = "user_30x0kyf3rMPcE8z2aPzuAcZN5v0";
+    const { userId } = useAuth();
 
     const {
         data: authUser,
         isError,
         error
     } = useFetch("fetchUser", () => fetchUserData(userId!.split("_")[1]));
+
     const {data: vault, error: vaultError, isError: isVaultError, isLoading: loadingVault} = useFetch<IVault>("fetchVaultById", () => fetchVaultById(vaultId, authUser._id))
 
     useEffect(() => {
