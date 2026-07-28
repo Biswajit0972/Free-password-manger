@@ -9,160 +9,134 @@ import {EncryptionResponse} from "../_utils/type";
 import {useDeletePassword, useGetUserData} from "../_utils/hooks";
 import {toast} from "react-toastify";
 
-const PasswordRender = ({
-                            Username,
-                            Password,
-    password_id
-                        }: {
+const PasswordRender = ({Username, Password, password_id}: {
     Username: string;
     Password: string;
-    password_id: string;
+    password_id: string
 }) => {
-
-    const [passwordToggler, setpasswordToggler] = useState<boolean>(false);
-    const [password, setPassword] = useState<string>(Password);
-    const [isPasswordDecrypted, setIsPasswordDecrypted] =
-        useState<boolean>(false);
+    const [passwordToggler, setPasswordToggler] = useState(false);
+    const [password, setPassword] = useState(Password);
+    const [isPasswordDecrypted, setIsPasswordDecrypted] = useState(false);
     const {derivedKey} = useCryptoContext();
     const {userId} = useAuth();
     const {error, mutateAsync} = useGetUserData();
     const {error: deleteError, mutateAsync: deletePasswordUsingID} = useDeletePassword();
 
-    if (error || deleteError) {
-        if (deleteError) {
-            toast.error("Failed to delete password. Please try again.");
-            console.log(deleteError.message)
-        } else {
-            toast.error("intenal server issue, please try again");
-        }
-    }
+    useEffect(() => {
+        if (error) toast.error("Internal server issue, please try again");
+    }, [error]);
 
+    useEffect(() => {
+        if (deleteError) toast.error("Failed to delete password. Please try again.");
+    }, [deleteError]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             if (isPasswordDecrypted) {
                 setPassword(Password);
                 setIsPasswordDecrypted(false);
-                setpasswordToggler(false);
+                setPasswordToggler(false);
             }
         }, 3000);
-
         return () => clearTimeout(timer);
     }, [isPasswordDecrypted, Password]);
 
+
     const decryptHelper = async (): Promise<string | void> => {
         const user: EncryptionResponse = await mutateAsync(userId!.split("_")[1]);
-
-        if (!user.data._id) {
-            console.error("User ID not found in response data");
-            return;
-        }
-
-        const enIv = user.data.EnIvKey;
-        const dataEnkey = await decryptSessionKey(derivedKey!, enIv);
-        if (!dataEnkey) {
-            console.error("Failed to decrypt session key");
-            return;
-        }
-
-        const decryptedPassword = await decryptData(
-            Password,
-            dataEnkey,
-            user.data.EnIvData
-        );
-
-        return decryptedPassword;
+        if (!user.data._id) return;
+        const dataKey = await decryptSessionKey(derivedKey!, user.data.EnIvKey);
+        if (!dataKey) return;
+        return decryptData(Password, dataKey, user.data.EnIvData);
     };
 
-    const testing = async () => {
+    const toggleVisibility = async () => {
         try {
             if (!isPasswordDecrypted) {
-                const decryptedPassword = await decryptHelper();
-
-                if (!decryptedPassword) {
-                    throw new Error("something wents wrong");
-                }
-                setPassword(decryptedPassword);
+                const decrypted = await decryptHelper();
+                if (!decrypted) throw new Error("Unable to decrypt password");
+                setPassword(decrypted);
                 setIsPasswordDecrypted(true);
             }
-
-            setpasswordToggler(!passwordToggler);
-        } catch (error) {
-            console.error("Error during password decryption:", error);
+            setPasswordToggler((current) => !current);
+        } catch {
             toast.error("Failed to decrypt password. Please try again.");
         }
     };
 
-    const clipBoardHelper = async (): Promise<void> => {
+    const copyPassword = async () => {
         try {
-            const copyPassword = await decryptHelper();
-            if (!copyPassword) {
-                throw new Error("falied to decrypt password!");
-            }
-
-            navigator.clipboard.writeText(copyPassword);
-            toast.success("password copied to clipboard");
-        } catch (error) {
-            const err = error as Error;
-            toast.error(err.message || "falied to copied password, please try again");
+            const decrypted = await decryptHelper();
+            if (!decrypted) throw new Error();
+            await navigator.clipboard.writeText(decrypted);
+            toast.success("Password copied to clipboard");
+        } catch {
+            toast.error("Failed to copy password. Please try again.");
         }
     };
 
-    const handleDelete = async (id: string) => {
-            await deletePasswordUsingID(id);
-    }
-
     return (
-        <div className="w-full  p-2 bg-gray-100 rounded-md shadow-sm mb-1 max-h-28">
-            <div className="text-sm font-medium text-gray-700 border-b border-gray-300  h-10 flex items-center gap-3">
-                <span className="font-bold text-[14px]">Username:</span>{" "}
-                <h3 className="font-semibold text-sm text-gray-800">{Username}</h3>
-                <div className="w-full h-full flex items-center justify-end ">
-                    <div className="h-full  flex items-center gap-3 pb-1">
-                        <button
-                            className=" rounded-md cursor-pointer h-full w-12 text-lg bg-blue-500"
-                            onClick={() => clipBoardHelper()}
-                        >
-                            🔏
+        <article
+            className="rounded-xl border border-white/[.07] bg-[#111827] p-3 transition hover:border-white/13 sm:p-4">
+
+            <div className="flex items-start justify-between gap-3">
+
+                <div className="min-w-0">
+                    <p
+                        className="text-lg font-semibold uppercase tracking-[.14em] text-slate-500">Username
+                    </p>
+                    <h3
+                        className="mt-1 truncate text-[16px] font-semibold text-slate-100">
+                        {Username}
+                    </h3>
+                </div>
+
+                <div className="flex shrink-0 gap-2">
+                    <button aria-label="Copy password" title="Copy password"
+                            className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-lg bg-teal-300/10 text-[16px] text-teal-200 transition hover:bg-teal-500 hover:text-slate-950"
+                            onClick={copyPassword}>
+                        📄
+                    </button>
+
+                    <button aria-label="Delete password" title="Delete password"
+                            className="flexh-12 w-12 cursor-pointer items-center justify-center rounded-lg bg-red-400/10 text-[16px] text-red-300 hover:text-white transition hover:bg-red-500 hover:text-slate-950"
+                            onClick={() => deletePasswordUsingID(password_id)}>
+                        X
+                    </button>
+
+                </div>
+            </div>
+
+            <div className="mt-3 flex items-center justify-between gap-2 ">
+                <div className="flex items-center w-[65%] rounded-lg border border-white/[.07] bg-black/20 p-2 ">
+                    <input
+                        aria-label="Saved password" type={passwordToggler ? "text" : "password"} value={password}
+                        readOnly
+                        className="min-w-0 flex-1 bg-transparent px-1 font-mono text-sm tracking-widest text-slate-300 outline-none"/>
+
+                    <div className="flex gap-4 items-center">
+                        <button aria-label={passwordToggler ? "Hide password" : "Show password"}
+                                title={passwordToggler ? "Hide password" : "Show password"} onClick={toggleVisibility}
+                                className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md text-sm text-slate-400 transition hover:bg-white/10 hover:text-slate-100">{passwordToggler ? "◉" : "○"}
                         </button>
-                        <button
-                            className=" rounded-md cursor-pointer h-full w-12 text-lg bg-red-500"
-                            onClick={() => handleDelete(password_id)}
-                        >
-                            🗑️
+
+                        <button aria-label="Copy password" title="Copy password"
+                                className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md text-sm text-slate-400 transition hover:bg-white/10 hover:text-slate-100"
+                                onClick={copyPassword}>⧉
                         </button>
                     </div>
                 </div>
-            </div>
-            <div className="text-sm font-medium text-gray-700 border-b border-gray-300 py-1  flex-between">
-                <div className="h-full w-[75%]  flex-between overflow-hidden">
-                    <span className="text-[14px] font-bold"> Password:</span>{" "}
+                <div className="relative rounded-lg border border-white/[.07] bg-black/20 p-2 w-[35%]">
                     <input
-                        type={passwordToggler ? "text" : "password"}
-                        value={password}
-                        readOnly
-                        className="bg-gray-300  h-8 max-w-[70%] rounded-md px-2 border-none outline-none text-gray-800 text-[17px]"
-                    />
-                </div>
+                        aria-label="Saved password" type="password" placeholder="Enter Master password to decrypt"
+                        className="min-w-0  w-full flex-1 bg-transparent px-1 font-mono text-sm tracking-widest text-slate-300 outline-none"/>
 
-                <div className="w-[20%] flex-between  text-lg">
-                    <button
-                        onClick={() => {
-                            testing();
-                        }}
-                        className="bg-gray-300 rounded-md cursor-pointer"
-                    >
-                        {passwordToggler ? "🙈" : "👁️"}
-                    </button>
-                    <button
-                        className="bg-gray-300 rounded-md cursor-pointer"
-                        onClick={() => clipBoardHelper()}
-                    >
-                        📋
-                    </button>
                 </div>
             </div>
-        </div>
+
+            {isPasswordDecrypted &&
+                <p className="mt-2 text-[11px] text-teal-300/80">Visible temporarily — it will hide automatically.</p>}
+        </article>
     );
 };
 
