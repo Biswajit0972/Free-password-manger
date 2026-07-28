@@ -11,10 +11,28 @@ import {FolderPlus} from "@deemlol/next-icons";
 import {useQuery} from "@tanstack/react-query";
 import {toast} from "react-toastify";
 import VaultSelector from "@/app/_components/VaultSelector";
+import {useRouter} from "next/navigation";
+import {useEffect} from "react";
+import Loading from "@/app/_components/Loading";
 
 const Password = () => {
-    const {state, dispatch} = useApplicationcontext();
-    const {userId} = useAuth()
+    const { state, dispatch } = useApplicationcontext();
+    const { isLoaded, isSignedIn, userId } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (isLoaded && !isSignedIn) {
+            router.replace("/sign-in");
+        }
+    }, [isLoaded, isSignedIn, router]);
+
+    if (!isLoaded) {
+        return <Loading />;
+    }
+
+    if (!isSignedIn) {
+        return <p className="text-xl text-red-500 text-center">Authenticate your self first!</p>;
+    }
 
     const {data: passwords, isLoading, error} = useQuery<SiteData[]>({
         queryKey: ["passwords", userId, state.vaultId],
