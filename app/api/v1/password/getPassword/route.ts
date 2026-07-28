@@ -43,7 +43,8 @@ async function getAllPasswords(req: NextRequest) {
                     $push: {
                         username: "$username",
                         password: "$password_obj.password",
-                        password_id: "$_id"
+                        password_id: "$_id",
+                        password_iv: "$password_obj.iv"
                     }
                 }
             }
