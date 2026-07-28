@@ -1,8 +1,8 @@
 import React from 'react'
-
+import Custom from "@/app/_components/Loading"
 const Loading = () => {
   return (
-    <div>loading...</div>
+    <Custom/>
   )
 }
 
