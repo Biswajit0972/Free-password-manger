@@ -6,6 +6,7 @@ import { LogIn } from "@deemlol/next-icons";
 import { FileText, Settings } from "@deemlol/next-icons";
 import {Password} from "@/app/_lib/models/password/password.model";
 
+
 type navItem = {
   title: string;
   href: string;
@@ -68,15 +69,17 @@ export const fakeUsers: User[] = [
   { username: "user_xyz", password: "helloWorld123" },
 ];
 
-type Account = {
+export type Account = {
   username: string;
   password: string;
   password_id: string;
+  password_iv: string;
+  vault_id?: string;
 };
 
 export type SiteData = {
   sitename: string;
-  user_id:string,
+  vaultId:string,
   accounts: Account[];
 };
 
