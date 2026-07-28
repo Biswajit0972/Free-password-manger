@@ -8,6 +8,7 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { PasswordProvider } from "./_context/Context";
 import { CryptoProvider } from "./_context/CryptoProvider";
 import Providers from "./query/Provider";
+import {Analytics} from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,6 +60,7 @@ export default function RootLayout({
                 transition={Bounce}
               />
             </body>
+          <Analytics/>
           </html>
         </CryptoProvider>
       </PasswordProvider>
