@@ -1,69 +1,48 @@
 @import "tailwindcss";
 
+:root {
+  --background: #080b12;
+  --surface: #101521;
+  --surface-raised: #151c2a;
+  --border: rgba(148, 163, 184, 0.16);
+  --muted: #8b98ad;
+  --accent: #5eead4;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--background); }
+
+body {
+  min-height: 100dvh;
+  margin: 0;
+  color: #e8edf7;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(45, 212, 191, .12), transparent 28rem),
+    radial-gradient(circle at 90% 18%, rgba(96, 165, 250, .10), transparent 25rem),
+    var(--background);
+}
+
+button, input { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
 @layer utilities {
-  .flex-center {
-    @apply flex items-center justify-center;
-  }
-
-  .flex-center-column {
-    @apply flex items-center justify-center flex-col;
-  }
-
-  .flex-between {
-    @apply flex items-center justify-between;
-  }
-
-  /* font-styles */
-
-   .hide-scrollbar {
-    scrollbar-width: none; /* Firefox */
-  }
-
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
-  }
+  .flex-center { @apply flex items-center justify-center; }
+  .flex-center-column { @apply flex flex-col items-center justify-center; }
+  .flex-between { @apply flex items-center justify-between; }
+  .hide-scrollbar { scrollbar-width: none; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
 }
 
 @layer base {
-  .primary-font {
-    @apply font-sans text-gray-800 text-4xl font-extrabold;
-  }
-
-  .secondary-font {
-    @apply font-sans text-[#6B7280] text-lg;
-  }
+  .primary-font { @apply font-sans text-4xl font-extrabold tracking-tight text-slate-100; }
+  .secondary-font { @apply font-sans text-lg text-slate-400; }
 }
 
 @layer components {
-  .slider {
-    @apply appearance-none w-full h-1 bg-gray-900 rounded-lg cursor-pointer;
-  }
-
-  /* Chrome, Safari, Edge */
-  .slider::-webkit-slider-thumb {
-    @apply appearance-none w-4 h-4 bg-black rounded-full border-2 border-gray-500 shadow;
-    margin-top: -6px; /* adjust vertically */
-  }
-
-  /* Firefox */
-  .slider::-moz-range-thumb {
-    @apply w-4 h-4 bg-black rounded-full border-2 border-gray-500 shadow;
-  }
-
-  /* IE (if needed, optional) */
-  .slider::-ms-thumb {
-    @apply w-4 h-4 bg-black rounded-full border-2 border-gray-500 shadow;
-  }
-
-  /* Chrome, Safari, Edge */
-  .no-spinner::-webkit-outer-spin-button,
-  .no-spinner::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  /* Firefox */
-  .no-spinner {
-    -moz-appearance: textfield;
-  }
+  .slider { @apply h-1.5 w-full cursor-pointer appearance-none rounded-full bg-slate-700 accent-teal-300; }
+  .slider::-webkit-slider-thumb { @apply h-4 w-4 cursor-pointer appearance-none rounded-full border-2 border-slate-950 bg-teal-300 shadow-[0_0_0_4px_rgba(94,234,212,.15)]; }
+  .slider::-moz-range-thumb { @apply h-4 w-4 cursor-pointer rounded-full border-2 border-slate-950 bg-teal-300 shadow-[0_0_0_4px_rgba(94,234,212,.15)]; }
+  .no-spinner::-webkit-outer-spin-button, .no-spinner::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .no-spinner { -moz-appearance: textfield; }
 }
