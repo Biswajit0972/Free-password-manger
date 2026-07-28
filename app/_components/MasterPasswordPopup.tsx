@@ -12,7 +12,8 @@ import { toast } from "react-toastify";
 export const MasterPasswordPopup = () => {
   const [masterPassword, setMasterPassword] = useState<string>("");
   const { setDerivedKey } = useCryptoContext();
-  const { userId } = useAuth();
+  // const { userId } = useAuth();
+  const userId = "user_30x0kyf3rMPcE8z2aPzuAcZN5v0"
 
   const { isPending, error, mutateAsync } = useGetUserData();
 
@@ -27,23 +28,25 @@ export const MasterPasswordPopup = () => {
     const masterPassword = formData.get("masterPassword") as string;
 
     const user: EncryptionResponse = await mutateAsync(userId!.split("_")[1]);
+    console.log(user)
 
-      if (!user.data._id) {
+    if (!user._id) {
       console.error("User ID not found in response data");
       return;
     }
 
     const derivedKey = await cryptoKeyGen(
       masterPassword,
-      user.data.saltDataKey,
-      user.data.saltEnKey,
-      user.data.EnIvKey
+      user.saltDataKey,
+      user.saltEnKey,
+      user.EnIvKey
     );
 
     if (!derivedKey) {
       toast.error("Failed to generate derived key. Please try again.");
       return;
     }
+
     setDerivedKey(derivedKey);
     
   };
