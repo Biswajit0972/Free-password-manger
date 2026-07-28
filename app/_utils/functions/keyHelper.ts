@@ -26,29 +26,35 @@ export function base64ToArrayBuffer(base64: string): Uint8Array<ArrayBuffer> {
     }
     return bytes;
 }
+export async function deriveMasterKey(
+    password: string,
+    salt: Uint8Array<ArrayBuffer>
+): Promise<CryptoKey> {
 
-export const genBaseKey = async (masterPassword: string): Promise<CryptoKey> => {
-    const enc = new TextEncoder();
-    const stringToArray = enc.encode(masterPassword);
-    // ! encode convert string to Uint8Array
-    return await window.crypto.subtle.importKey("raw", stringToArray, "PBKDF2", false, ["deriveKey"]);
-}
+    const passwordKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(password),
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+    );
 
-export const genDerivedKey = async (baseKey: CryptoKey, salt: Uint8Array<ArrayBuffer>): Promise<CryptoKey> => {
-    return await window.crypto.subtle.deriveKey(
+    return crypto.subtle.deriveKey(
         {
             name: "PBKDF2",
-            salt: salt,
-            iterations: 100000,
+            salt,
+            iterations: 600000,
             hash: "SHA-256",
         },
-        baseKey,
-        { name: "AES-GCM", length: 256 },
-        true,
+        passwordKey,
+        {
+            name: "AES-GCM",
+            length: 256,
+        },
+        false,
         ["encrypt", "decrypt"]
     );
 }
-
 // ? password and username encryption and decryption started here
 
 export const encryptData = async (data: string, key: CryptoKey, iv: string): Promise<{ cipherText: string, iv: string }> => {
@@ -120,4 +126,25 @@ export const decryptDerivedKey = async (baseKey: CryptoKey, cipheredKey: Uint8Ar
     );
 
     return derivedKey;
+}
+
+export async function importVaultKey(
+    rawKey: ArrayBuffer
+): Promise<CryptoKey> {
+    return await crypto.subtle.importKey(
+        "raw",
+        rawKey,
+        {
+            name: "AES-GCM",
+        },
+        true,
+        ["encrypt", "decrypt"]
+    );
+}
+
+export function generateSalt(length: number = 16) {
+    return crypto.getRandomValues(new Uint8Array(length));
+}
+export function generateIv(length: number = 12) {
+    return crypto.getRandomValues(new Uint8Array(length));
 }
