@@ -2,10 +2,8 @@
 
 import CustomUl from "@/app/_components/CustomUl";
 import Dropdown from "@/app/_components/Dropdown";
-import {MasterPasswordPopup} from "@/app/_components/MasterPasswordPopup";
 import PasswordForm from "@/app/_components/PasswordForm";
 import {useApplicationcontext} from "@/app/_context/Context";
-import {useCryptoContext} from "@/app/_context/CryptoProvider";
 import {SiteData} from "@/app/_utils/type";
 import {fetchPasswords} from "@/app/_utils/functions/fetch";
 import {useAuth} from "@clerk/nextjs";
@@ -16,7 +14,7 @@ import VaultSelector from "@/app/_components/VaultSelector";
 
 const Password = () => {
     const {state, dispatch} = useApplicationcontext();
-    const userId = "user_30x0kyf3rMPcE8z2aPzuAcZN5v0";
+    const {userId} = useAuth()
 
     const {data: passwords, isLoading, error} = useQuery<SiteData[]>({
         queryKey: ["passwords", userId, state.vaultId],
