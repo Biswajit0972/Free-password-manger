@@ -26,6 +26,7 @@ const VaultSelector = () => {
     const {data: authUser} = useFetch("fetchUser", () => fetchUserData(userId!.split("_")[1]));
     const {isLoading: loadVaults, data: vaults} = useFetch<IVault[]>("fetchVaults", () => fetchVaults(authUser._id));
     const {error, isError, isPending, mutateAsync} = useCreateVault();
+
     const {dispatch} = useApplicationcontext();
 
     useEffect(() => {
@@ -33,7 +34,11 @@ const VaultSelector = () => {
             toast.error("Error creating vault");
             console.log(error.message)
         }
-    }, [error, isError]);
+
+        if (!loadVaults && vaults && vaults.length !== 0) {
+            dispatch({type: "CHOOSE_VAULT", payload: `${vaults[0]._id}`})
+        }
+    }, [error, isError, loadVaults, vaults,  dispatch]);
 
     const handleCreateVault = async (event: SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
