@@ -40,8 +40,9 @@ export default function RootLayout({
             <body
               className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
+
               <Navbar />
-              <main className="max-w-screen relative h-[calc(100vh-4.5rem)] overflow-x-hidden">
+              <main className="min-h-[calc(100dvh-4rem)] overflow-x-hidden">
                 <Providers>{children}</Providers>
               </main>
               <ToastContainer
@@ -54,7 +55,7 @@ export default function RootLayout({
                 pauseOnFocusLoss
                 draggable
                 pauseOnHover
-                theme="light"
+                theme="dark"
                 transition={Bounce}
               />
             </body>
