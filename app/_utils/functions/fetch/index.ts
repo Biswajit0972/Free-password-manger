@@ -12,13 +12,8 @@ export type CreateVaultPayload = {
 };
 
 export const fetchUserData = async (user_id: string) => {
-    try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/user/${user_id}`);
-        return response.data?.data;
-    } catch (error) {
-        const err = error as Error;
-        console.error("Error fetching user data:", err.message);
-    }
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/user/${user_id}`);
+    return response.data?.data;
 }
 
 export const createPassword = async (data:Encryption) => {
@@ -26,39 +21,24 @@ export const createPassword = async (data:Encryption) => {
     return response.data?.data;
 }
 
-export const fetchPasswords = async (user_id: string) => {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/password/getPassword?user_id=${user_id}`);
+export const fetchPasswords = async (user_id: string, vault_id:string) => {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/password/getPassword?user_id=${user_id}&vault_id=${vault_id}`);
     return response.data!.data;
 }
 
-export const deletePassword = async (password_id: string) => {
-    try {
-        const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/password/deletepassword`, {data: {password_id}});
-        return response.data;
-    } catch (error) {
-        const err = error as Error;
-        console.error("Error deleting password:", err.message);
-    }
+export const deletePassword = async (data: {password_id:string, vault_id:string}) => {
+    const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/password/deletepassword`, {data});
+    return response.data?.data;
 }
 
 export const fetchVaults = async (user_id: string) => {
-    try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/vault/${user_id}`);
-        return response.data.data;
-    } catch (error) {
-        const err = error as Error;
-        console.error("Error:", err.message);
-    }
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/vault/${user_id}`);
+    return response.data.data;
 }
 
 export const createVault = async (data: CreateVaultPayload) => {
-   try {
-       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/vault/create`, data);
-       return response.data.data as { vaultId: string; vaultName: string };
-   }catch(error) {
-       const err = error as Error;
-       console.error("Error creating vault:", err.message);
-   }
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/vault/create`, data);
+    return response.data.data as { vaultId: string; vaultName: string };
 };
 
 
