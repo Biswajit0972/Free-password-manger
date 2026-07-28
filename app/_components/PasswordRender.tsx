@@ -10,8 +10,6 @@ import {fetchUserData, fetchVaultById} from "@/app/_utils/functions/fetch";
 import {useApplicationcontext} from "@/app/_context/Context";
 
 const PasswordRender = ({data}: { data: Account }) => {
-    console.log(data)
-
     const {password: encryptedPassword, password_iv, password_id, username ,vault_id} = data;
     const [passwordToggler, setPasswordToggler] = useState(false);
     const [password, setPassword] = useState(encryptedPassword);
@@ -19,8 +17,8 @@ const PasswordRender = ({data}: { data: Account }) => {
     const [isPasswordDecrypted, setIsPasswordDecrypted] = useState(false);
 
     // !  authUser Required
-    // const {userId} = useAuth();
-    const userId = "user_30x0kyf3rMPcE8z2aPzuAcZN5v0";
+    const {userId} = useAuth();
+
     const {state: {vaultId}} = useApplicationcontext();
     const {
         data: authUser,
@@ -57,7 +55,6 @@ const PasswordRender = ({data}: { data: Account }) => {
         }
 
         if (isDeleteError) {
-            console.log(deleteError.message)
             toast.error("Error Deleting Password");
         }
     }, [vaultId, error, isError, isVaultError, vaultError, isDeleteError, deleteError]);
