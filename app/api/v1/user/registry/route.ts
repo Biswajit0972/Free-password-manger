@@ -46,16 +46,6 @@ export async function POST(request: Request) {
             if (exisitingUser) {
                 throw new Error("User already exists");
             }
-            // ! encyption part started here
-            const salt = crypto.getRandomValues(new Uint8Array(16));
-            const saltEn = crypto.getRandomValues(new Uint8Array(16));
-            const keyIv = crypto.getRandomValues(new Uint8Array(12));
-            const dataIv = crypto.getRandomValues(new Uint8Array(12));
-
-            const saltDataKey = arrayBufferToBase64(salt.buffer);
-            const saltEnKey = arrayBufferToBase64(saltEn.buffer);
-            const EnIvKey = arrayBufferToBase64(keyIv.buffer);
-            const EnIvData = arrayBufferToBase64(dataIv.buffer);
 
             const user = new UserModel({
                 clerkId: updatedId,
@@ -65,10 +55,6 @@ export async function POST(request: Request) {
                 imageUrl: evt.data.image_url,
                 lastSignInAt: evt.data.last_sign_in_at,
                 createdAt: evt.data.created_at,
-                saltDataKey,
-                saltEnKey,
-                EnIvKey,
-                EnIvData
             });
 
             await user.save();
