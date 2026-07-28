@@ -22,7 +22,8 @@ const VaultSelector = () => {
     const [masterPassword, setMasterPassword] = useState<string>("");
     const [vault, setVault] = useState<string>("");
 
-    const userId = "user_30x0kyf3rMPcE8z2aPzuAcZN5v0";
+    const {userId} = useAuth();
+
     const {data: authUser} = useFetch("fetchUser", () => fetchUserData(userId!.split("_")[1]));
     const {isLoading: loadVaults, data: vaults} = useFetch<IVault[]>("fetchVaults", () => fetchVaults(authUser._id));
     const {error, isError, isPending, mutateAsync} = useCreateVault();
