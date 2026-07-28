@@ -1,57 +1,99 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {decryptData} from "../_utils/functions/keyHelper";
-import {useCryptoContext} from "../_context/CryptoProvider";
-import {decryptSessionKey} from "../_utils/functions/keyGen";
+import {base64ToArrayBuffer, decryptData, decryptDerivedKey, deriveMasterKey} from "../_utils/functions/keyHelper";
 import {useAuth} from "@clerk/nextjs";
-import {EncryptionResponse} from "../_utils/type";
-import {useDeletePassword, useGetUserData} from "../_utils/hooks";
+import {Account, IVault} from "../_utils/type";
+import {useDeletePassword, useFetch, useGetUserData} from "../_utils/hooks";
 import {toast} from "react-toastify";
+import {fetchUserData, fetchVaultById} from "@/app/_utils/functions/fetch";
+import {useApplicationcontext} from "@/app/_context/Context";
 
-const PasswordRender = ({Username, Password, password_id}: {
-    Username: string;
-    Password: string;
-    password_id: string
-}) => {
+const PasswordRender = ({data}: { data: Account }) => {
+    console.log(data)
+
+    const {password: encryptedPassword, password_iv, password_id, username ,vault_id} = data;
     const [passwordToggler, setPasswordToggler] = useState(false);
-    const [password, setPassword] = useState(Password);
+    const [password, setPassword] = useState(encryptedPassword);
+    const [masterPassword, setMasterPassword] = useState<string>("");
     const [isPasswordDecrypted, setIsPasswordDecrypted] = useState(false);
-    const {derivedKey} = useCryptoContext();
-    const {userId} = useAuth();
-    const {error, mutateAsync} = useGetUserData();
-    const {error: deleteError, mutateAsync: deletePasswordUsingID} = useDeletePassword();
+
+    // !  authUser Required
+    // const {userId} = useAuth();
+    const userId = "user_30x0kyf3rMPcE8z2aPzuAcZN5v0";
+    const {state: {vaultId}} = useApplicationcontext();
+    const {
+        data: authUser,
+        isError,
+        error
+    } = useFetch("fetchUser", () => fetchUserData(userId!.split("_")[1]));
+
+    const {
+        data: vault,
+        error: vaultError,
+        isError: isVaultError,
+        isLoading: loadingVault
+    } = useFetch<IVault>("fetchVaultById", () => fetchVaultById(vaultId, authUser._id))
+
+    const {error: deleteError, isError:isDeleteError, isPending,  mutate: deletePasswordUsingID} = useDeletePassword();
 
     useEffect(() => {
-        if (error) toast.error("Internal server issue, please try again");
-    }, [error]);
+        if (isError) {
+            console.error("Error fetching user data:", error);
+            toast.error("internal server issue, please try again");
+        }
 
-    useEffect(() => {
-        if (deleteError) toast.error("Failed to delete password. Please try again.");
-    }, [deleteError]);
+        if (!vaultId) {
+            toast.error("please choose a vault to create  password");
+        }
+
+        if (isVaultError) {
+            console.error("Error fetching user data:", vaultError);
+            toast.error("internal server issue, please try again");
+        }
+
+        if (!loadingVault && !vault) {
+            toast.error("Error fetching vault");
+        }
+
+        if (isDeleteError) {
+            console.log(deleteError.message)
+            toast.error("Error Deleting Password");
+        }
+    }, [vaultId, error, isError, isVaultError, vaultError, isDeleteError, deleteError]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             if (isPasswordDecrypted) {
-                setPassword(Password);
+                setPassword(encryptedPassword);
                 setIsPasswordDecrypted(false);
                 setPasswordToggler(false);
             }
         }, 3000);
         return () => clearTimeout(timer);
-    }, [isPasswordDecrypted, Password]);
+    }, [isPasswordDecrypted, encryptedPassword]);
 
 
     const decryptHelper = async (): Promise<string | void> => {
-        const user: EncryptionResponse = await mutateAsync(userId!.split("_")[1]);
-        if (!user.data._id) return;
-        const dataKey = await decryptSessionKey(derivedKey!, user.data.EnIvKey);
-        if (!dataKey) return;
-        return decryptData(Password, dataKey, user.data.EnIvData);
+        const salt = base64ToArrayBuffer(vault!.salt);
+        const Iv = base64ToArrayBuffer(vault!.wrapIv);
+
+        // generate derived key
+        const derivedKey = await deriveMasterKey(masterPassword, salt);
+        const wrapVault = base64ToArrayBuffer(vault?.wrappedVaultKey!)
+        const vaultKey = await decryptDerivedKey(derivedKey, wrapVault, Iv);
+
+        return await decryptData(encryptedPassword, vaultKey, password_iv);
     };
 
     const toggleVisibility = async () => {
         try {
+
+            if (!masterPassword || masterPassword.trim() === "") {
+                toast.error("Please enter Master  password first to decrypt account's password");
+                return;
+            }
+
             if (!isPasswordDecrypted) {
                 const decrypted = await decryptHelper();
                 if (!decrypted) throw new Error("Unable to decrypt password");
@@ -59,18 +101,24 @@ const PasswordRender = ({Username, Password, password_id}: {
                 setIsPasswordDecrypted(true);
             }
             setPasswordToggler((current) => !current);
-        } catch {
+        } catch (error) {
+            console.log(error)
             toast.error("Failed to decrypt password. Please try again.");
         }
     };
 
     const copyPassword = async () => {
         try {
+            if (!masterPassword || masterPassword.trim() === "") {
+                toast.error("Please enter Master  password first to decrypt account's password");
+                return;
+            }
+
             const decrypted = await decryptHelper();
             if (!decrypted) throw new Error();
             await navigator.clipboard.writeText(decrypted);
             toast.success("Password copied to clipboard");
-        } catch {
+        } catch(err) {
             toast.error("Failed to copy password. Please try again.");
         }
     };
@@ -87,7 +135,7 @@ const PasswordRender = ({Username, Password, password_id}: {
                     </p>
                     <h3
                         className="mt-1 truncate text-[16px] font-semibold text-slate-100">
-                        {Username}
+                        {username}
                     </h3>
                 </div>
 
@@ -100,8 +148,8 @@ const PasswordRender = ({Username, Password, password_id}: {
 
                     <button aria-label="Delete password" title="Delete password"
                             className="flexh-12 w-12 cursor-pointer items-center justify-center rounded-lg bg-red-400/10 text-[16px] text-red-300 hover:text-white transition hover:bg-red-500 hover:text-slate-950"
-                            onClick={() => deletePasswordUsingID(password_id)}>
-                        X
+                            onClick={() => deletePasswordUsingID({password_id, vault_id:vault_id!})}>
+                        💀
                     </button>
 
                 </div>
@@ -128,7 +176,9 @@ const PasswordRender = ({Username, Password, password_id}: {
                 </div>
                 <div className="relative rounded-lg border border-white/[.07] bg-black/20 p-2 w-[35%]">
                     <input
-                        aria-label="Saved password" type="password" placeholder="Enter Master password to decrypt"
+                        aria-label="Master password used for decryption" type="password"
+                        placeholder="Enter Master password to decrypt" value={masterPassword}
+                        onChange={(e) => setMasterPassword(e.target.value)}
                         className="min-w-0  w-full flex-1 bg-transparent px-1 font-mono text-sm tracking-widest text-slate-300 outline-none"/>
 
                 </div>
