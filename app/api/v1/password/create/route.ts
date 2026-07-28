@@ -5,24 +5,36 @@ import { ApiResponse, ErrorResponse } from "@/app/_utils/functions/Apiresponse";
 import { AsyncHandler } from "@/app/_utils/functions/helper";
 
 import { NextRequest, NextResponse } from "next/server";
+import VAULT from "@/app/_lib/models/vault/vault.schema";
 
 async function createPassword(req: NextRequest) {
     await databaseConnection();
-    const { user_id, username, password_obj, application_link } = await req.json();
 
-    if (!user_id || !username || !password_obj || !application_link) {
+    const {vaultId, user_id, username, password_obj, application_link } = await req.json();
+
+    if (!vaultId || !username || !password_obj || !application_link || !user_id) {
         throw new ErrorResponse(400, "All fields are required");
     }
 
-    const isUserExists = await UserModel.findOne({ _id: user_id })
+
+    const vault = await VAULT.findById(vaultId);
     
-    if (!isUserExists) {
+    if (!vault) {
+        throw new ErrorResponse(404, "iVault not found");
+    }
+
+    const user = await UserModel.findById(user_id);
+
+    if (!user) {
         throw new ErrorResponse(404, "User not found");
     }
-   
+
+    if (!vault.userId.equals(user._id)) {
+        throw new ErrorResponse(401, "User not authorized");
+    }
 
     const newPassword = await PasswordModel.create({
-        user_id: isUserExists._id,
+        vaultId: vault._id,
         username,
         password_obj,
         application_link,
